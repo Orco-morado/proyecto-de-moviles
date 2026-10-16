@@ -2,14 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.example.dsy1105_007d_2026"
+    namespace = "com.example.proyectoappmovil"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.dsy1105_007d_2026"
+        applicationId = "com.example.proyectoappmovil"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -43,6 +44,8 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -50,12 +53,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Dependencias para la navegacion con Jetpack Compose
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    //Dependencias para Iconos
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
 
     testImplementation(libs.junit)
