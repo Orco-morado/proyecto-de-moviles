@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DSY1105-007D-2026"
+rootProject.name = "proyecto-app-movil"
 include(":app")
