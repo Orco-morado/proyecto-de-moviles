@@ -3,10 +3,10 @@
 ## Descripción del Proyecto
 Aplicación móvil desarrollada en Android Studio (Jetpack Compose) enfocada en mejorar la forma en que el equipo comercial identifica, organiza, prioriza y gestiona oportunidades de activación corporativa. MVP estructurado con arquitectura MVVM y persistencia de datos local mediante Room.
 
-## Integrantes del Equipo
-* Cristopher Rojas Vega
-* [Nombre de tu compañero 1]
-* [Nombre de tu compañero 2]
+## Integrantes del Equipo número 11
+* Vicente Guajardo
+* Cristopher Rojas
+
 
 ## Funcionalidades Implementadas
 * Interfaz visual estructurada con Jetpack Compose y Material Design 3.
