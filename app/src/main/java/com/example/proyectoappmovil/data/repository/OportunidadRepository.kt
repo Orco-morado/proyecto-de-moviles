@@ -16,6 +16,7 @@ interface OportunidadRepository {
         texto: String
     ): Flow<List<Oportunidad>>
     fun observarTotal(): Flow<Int>
+    fun observarEnEsperaRespuesta(): Flow<List<Oportunidad>>
     suspend fun obtenerPorId(id: Long): Oportunidad?
     suspend fun insertar(oportunidad: Oportunidad): Long
     suspend fun actualizar(oportunidad: Oportunidad)
@@ -36,6 +37,9 @@ class OportunidadRepositoryImpl(
     ): Flow<List<Oportunidad>> = dao.observarFiltradas(estado, prioridad, tipo, texto)
 
     override fun observarTotal(): Flow<Int> = dao.observarTotal()
+
+    override fun observarEnEsperaRespuesta(): Flow<List<Oportunidad>> =
+        dao.observarEnEsperaRespuesta()
 
     override suspend fun obtenerPorId(id: Long): Oportunidad? = dao.obtenerPorId(id)
 

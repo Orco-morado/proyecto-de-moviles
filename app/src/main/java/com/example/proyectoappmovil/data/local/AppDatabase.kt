@@ -30,7 +30,7 @@ import com.example.proyectoappmovil.data.local.entity.Usuario
         Seguimiento::class,
         ResultadoActivacion::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -54,7 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "agencia.db"
-                ).build().also { instancia = it }
+                ).fallbackToDestructiveMigration().build().also { instancia = it }
             }
     }
 }
