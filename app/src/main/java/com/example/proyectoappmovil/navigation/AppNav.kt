@@ -10,6 +10,7 @@ import com.example.proyectoappmovil.ui.eventos.EventosScreen
 import com.example.proyectoappmovil.ui.login.LoginScreen
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadesScreen
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadFormScreen
+import com.example.proyectoappmovil.ui.seguimiento.SeguimientoScreen
 
 @Composable
 fun AppNav() {
@@ -46,6 +47,17 @@ fun AppNav() {
 
         composable("eventos") {
             EventosScreen(navController = navController)
+        }
+
+        composable(
+            route = "seguimientos/{oportunidadId}/{username}",
+            arguments = listOf(
+                navArgument("oportunidadId") { type = NavType.LongType },
+                navArgument("username") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val oportunidadId = backStackEntry.arguments?.getLong("oportunidadId") ?: 0L
+            SeguimientoScreen(oportunidadId = oportunidadId, navController = navController)
         }
     }
 }

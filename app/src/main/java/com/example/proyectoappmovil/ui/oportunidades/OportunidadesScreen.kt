@@ -172,6 +172,18 @@ fun OportunidadesScreen(
                                 maxLines = 2,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        navController.navigate("seguimientos/${oportunidad.id}/$username")
+                                    }
+                                ) {
+                                    Text("Ver historial")
+                                }
+                            }
                         }
                     }
                 }
