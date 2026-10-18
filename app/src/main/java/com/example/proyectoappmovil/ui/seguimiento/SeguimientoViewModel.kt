@@ -28,6 +28,7 @@ data class SeguimientoFormUiState(
     val proximaAccion: String = "",
     val fechaProximo: String = "",
     val observaciones: String = "",
+    val fotoEvidencia: String? = null,
     val errores: Map<String, String> = emptyMap(),
     val esGuardando: Boolean = false,
     val mensaje: String? = null,
@@ -77,6 +78,18 @@ class SeguimientoViewModel(
         _uiState.update { it.copy(observaciones = value) }
     }
 
+    fun onFotoTomada(ruta: String) {
+        _uiState.update { it.copy(fotoEvidencia = ruta, mensaje = "Evidencia fotográfica adjunta") }
+    }
+
+    fun onQuitarFoto() {
+        _uiState.update { it.copy(fotoEvidencia = null) }
+    }
+
+    fun onAviso(texto: String) {
+        _uiState.update { it.copy(mensaje = texto) }
+    }
+
     fun consumirRecordatorio() {
         _uiState.update { it.copy(recordatorioProgramadoEn = null, recordatorioTexto = null) }
     }
@@ -114,7 +127,8 @@ class SeguimientoViewModel(
                 resultado = estado.resultado,
                 proximaAccion = estado.proximaAccion,
                 fechaProximoSeguimiento = fechaMillis,
-                observaciones = estado.observaciones
+                observaciones = estado.observaciones,
+                fotoEvidencia = estado.fotoEvidencia
             )
 
             val idGenerado = repositorio.insertar(seguimiento)
@@ -146,6 +160,7 @@ class SeguimientoViewModel(
                     proximaAccion = "",
                     fechaProximo = "",
                     observaciones = "",
+                    fotoEvidencia = null,
                     errores = emptyMap()
                 )
             }

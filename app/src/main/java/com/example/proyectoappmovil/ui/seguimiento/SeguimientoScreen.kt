@@ -1,11 +1,17 @@
 package com.example.proyectoappmovil.ui.seguimiento
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,14 +21,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -31,6 +40,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -44,18 +54,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectoappmovil.camara.CamaraHelper
 import com.example.proyectoappmovil.data.local.entity.Seguimiento
 import com.example.proyectoappmovil.data.model.TipoAccionSeguimiento
 import com.example.proyectoappmovil.notificaciones.NotificacionHelper
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadRepositorioPrueba
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -189,6 +206,37 @@ private fun FormularioSeguimiento(
     vm: SeguimientoViewModel
 ) {
     var tipoExpanded by remember { mutableStateOf(false) }
+    val contexto = LocalContext.current
+    var archivoPendiente by remember { mutableStateOf<File?>(null) }
+
+    val lanzadorCamara = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { capturada ->
+        val archivo = archivoPendiente
+        if (capturada && archivo != null) {
+            vm.onFotoTomada(archivo.absolutePath)
+        }
+    }
+
+    fun abrirCamara() {
+        val archivo = CamaraHelper.crearArchivo(contexto)
+        archivoPendiente = archivo
+        runCatching {
+            lanzadorCamara.launch(CamaraHelper.uriParaArchivo(contexto, archivo))
+        }.onFailure {
+            vm.onAviso("No se encontró una aplicación de cámara en el dispositivo")
+        }
+    }
+
+    val lanzadorPermiso = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        if (concedido) {
+            abrirCamara()
+        } else {
+            vm.onAviso("Permiso de cámara denegado: no es posible adjuntar evidencia")
+        }
+    }
 
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -253,6 +301,54 @@ private fun FormularioSeguimiento(
                 label = { Text("Observaciones") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Text(
+                text = "Evidencia fotográfica (opcional)",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            val fotoAdjunta = state.fotoEvidencia
+            if (fotoAdjunta == null) {
+                OutlinedButton(
+                    onClick = {
+                        if (tienePermisoCamara(contexto)) {
+                            abrirCamara()
+                        } else {
+                            lanzadorPermiso.launch(Manifest.permission.CAMERA)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(imageVector = Icons.Default.AddAPhoto, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Tomar foto")
+                }
+            } else {
+                val miniatura = remember(fotoAdjunta) {
+                    CamaraHelper.cargarMiniatura(fotoAdjunta)
+                }
+                miniatura?.let { imagen ->
+                    Image(
+                        bitmap = imagen.asImageBitmap(),
+                        contentDescription = "Evidencia fotográfica adjunta",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
+                TextButton(
+                    onClick = {
+                        runCatching { File(fotoAdjunta).delete() }
+                        vm.onQuitarFoto()
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Quitar foto")
+                }
+            }
 
             Button(
                 onClick = { vm.guardar() },
@@ -358,10 +454,33 @@ private fun FilaSeguimiento(
                         }
                     )
                 }
+
+                seguimiento.fotoEvidencia?.let { ruta ->
+                    val miniatura = remember(seguimiento.id, ruta) {
+                        CamaraHelper.cargarMiniatura(ruta, 384)
+                    }
+                    miniatura?.let { imagen ->
+                        Image(
+                            bitmap = imagen.asImageBitmap(),
+                            contentDescription = "Evidencia fotográfica del seguimiento",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(140.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                    }
+                }
             }
         }
     }
 }
+
+private fun tienePermisoCamara(contexto: Context): Boolean =
+    ContextCompat.checkSelfPermission(
+        contexto,
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
 
 @Preview(showBackground = true)
 @Composable
