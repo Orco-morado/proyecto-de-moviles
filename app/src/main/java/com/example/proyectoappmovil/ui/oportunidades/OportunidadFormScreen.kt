@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -71,6 +72,11 @@ fun OportunidadFormScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errores.containsKey("nombre"),
+                trailingIcon = {
+                    if (state.errores.containsKey("nombre")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
                 supportingText = { state.errores["nombre"]?.let { Text(it) } }
             )
 
@@ -113,6 +119,11 @@ fun OportunidadFormScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errores.containsKey("fuenteInformacion"),
+                trailingIcon = {
+                    if (state.errores.containsKey("fuenteInformacion")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
                 supportingText = { state.errores["fuenteInformacion"]?.let { Text(it) } }
             )
 
@@ -123,6 +134,11 @@ fun OportunidadFormScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errores.containsKey("fechaDeteccion"),
+                trailingIcon = {
+                    if (state.errores.containsKey("fechaDeteccion")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
                 supportingText = { state.errores["fechaDeteccion"]?.let { Text(it) } }
             )
 
@@ -132,6 +148,11 @@ fun OportunidadFormScreen(
                 label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errores.containsKey("descripcion"),
+                trailingIcon = {
+                    if (state.errores.containsKey("descripcion")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
                 supportingText = { state.errores["descripcion"]?.let { Text(it) } }
             )
 
@@ -173,6 +194,11 @@ fun OportunidadFormScreen(
                 label = { Text("Potencial comercial estimado") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errores.containsKey("potencialComercial"),
+                trailingIcon = {
+                    if (state.errores.containsKey("potencialComercial")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
                 supportingText = { state.errores["potencialComercial"]?.let { Text(it) } }
             )
 
