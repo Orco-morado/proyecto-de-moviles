@@ -59,7 +59,9 @@ object SeedData {
                 region = "Metropolitana",
                 sitioWeb = "https://municipalidad-ejemplo.cl",
                 publicoAsociado = "Funcionarios municipales y familias de la comuna",
-                observaciones = "Organización ficticia de ejemplo"
+                observaciones = "Organización ficticia de ejemplo",
+                latitud = -33.6116,
+                longitud = -70.5755
             )
         )
         val idInnovaTech = baseDeDatos.organizacionDao().insertar(
@@ -71,7 +73,9 @@ object SeedData {
                 region = "Metropolitana",
                 sitioWeb = "https://innovatech-ejemplo.cl",
                 publicoAsociado = "Trabajadores y familias",
-                observaciones = "Organización ficticia de ejemplo"
+                observaciones = "Organización ficticia de ejemplo",
+                latitud = -33.4314,
+                longitud = -70.6093
             )
         )
         val idPlaza = baseDeDatos.organizacionDao().insertar(
@@ -83,7 +87,9 @@ object SeedData {
                 region = "Metropolitana",
                 sitioWeb = "https://plaza-ejemplo.cl",
                 publicoAsociado = "Visitantes y vecinos de la comuna",
-                observaciones = "Organización ficticia de ejemplo"
+                observaciones = "Organización ficticia de ejemplo",
+                latitud = -33.5225,
+                longitud = -70.5975
             )
         )
 
@@ -251,7 +257,7 @@ object SeedData {
                 observaciones = ""
             )
         )
-        baseDeDatos.oportunidadDao().insertar(
+        val idOportunidadPlaza = baseDeDatos.oportunidadDao().insertar(
             Oportunidad(
                 nombre = "Expo Familias Plaza Ficticia",
                 tipo = TipoEvento.ACTIVACION_COMERCIAL,
@@ -318,6 +324,18 @@ object SeedData {
                 proximaAccion = "Llamar para revisar condiciones",
                 fechaProximoSeguimiento = ahora + 5 * DIA,
                 observaciones = ""
+            )
+        )
+        baseDeDatos.seguimientoDao().insertar(
+            Seguimiento(
+                oportunidadId = idOportunidadPlaza,
+                usuarioResponsableId = idMarcos,
+                tipoAccion = TipoAccionSeguimiento.BUSQUEDA_CONTACTO,
+                fechaHora = ahora - 6 * DIA,
+                resultado = "Se identificó a Valentina Soto como coordinadora de marketing",
+                proximaAccion = "Llamar para confirmar participación en Expo Familias",
+                fechaProximoSeguimiento = ahora - 2 * DIA,
+                observaciones = "Seguimiento atrasado de ejemplo"
             )
         )
 

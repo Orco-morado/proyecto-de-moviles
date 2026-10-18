@@ -21,6 +21,8 @@ class OportunidadRepositorioPrueba : OportunidadRepository {
 
     override fun observarTotal(): Flow<Int> = flowOf(0)
 
+    override fun observarEnEsperaRespuesta(): Flow<List<Oportunidad>> = flowOf(emptyList())
+
     override suspend fun obtenerPorId(id: Long): Oportunidad? = null
 
     override suspend fun insertar(oportunidad: Oportunidad): Long = 0L

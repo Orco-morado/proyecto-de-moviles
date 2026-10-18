@@ -14,5 +14,7 @@ data class Organizacion(
     val region: String,
     val sitioWeb: String,
     val publicoAsociado: String,
-    val observaciones: String
+    val observaciones: String,
+    val latitud: Double? = null,
+    val longitud: Double? = null
 )

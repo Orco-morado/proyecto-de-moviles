@@ -37,6 +37,15 @@ interface OportunidadDao {
     @Query("SELECT COUNT(*) FROM oportunidades")
     fun observarTotal(): Flow<Int>
 
+    @Query(
+        """
+        SELECT * FROM oportunidades
+        WHERE estado IN ('PROPUESTA_ENVIADA', 'EN_ESPERA_RESPUESTA')
+        ORDER BY fechaActualizacion DESC
+        """
+    )
+    fun observarEnEsperaRespuesta(): Flow<List<Oportunidad>>
+
     @Query("SELECT * FROM oportunidades WHERE id = :id")
     suspend fun obtenerPorId(id: Long): Oportunidad?
 

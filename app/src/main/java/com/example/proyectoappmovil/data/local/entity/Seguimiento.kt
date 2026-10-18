@@ -33,5 +33,6 @@ data class Seguimiento(
     val resultado: String,
     val proximaAccion: String,
     val fechaProximoSeguimiento: Long?,
-    val observaciones: String
+    val observaciones: String,
+    val fotoEvidencia: String? = null
 )
