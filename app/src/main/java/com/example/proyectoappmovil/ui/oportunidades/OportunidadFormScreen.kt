@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -34,13 +35,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyectoappmovil.data.local.entity.Oportunidad
-import com.example.proyectoappmovil.data.model.EstadoOportunidad
 import com.example.proyectoappmovil.data.model.Prioridad
 import com.example.proyectoappmovil.data.model.TipoEvento
-import com.example.proyectoappmovil.data.repository.OportunidadRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import com.example.proyectoappmovil.ui.oportunidades.OportunidadRepositorioPrueba
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +70,14 @@ fun OportunidadFormScreen(
                 onValueChange = vm::onNombreChange,
                 label = { Text("Nombre de la oportunidad") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errores.containsKey("nombre"),
+                trailingIcon = {
+                    if (state.errores.containsKey("nombre")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
+                supportingText = { state.errores["nombre"]?.let { Text(it) } }
             )
 
             var tipoSeleccionado by remember { mutableStateOf(state.tipo ?: TipoEvento.EVENTO_CORPORATIVO) }
@@ -113,7 +117,14 @@ fun OportunidadFormScreen(
                 onValueChange = vm::onFuenteInformacionChange,
                 label = { Text("Fuente de información") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errores.containsKey("fuenteInformacion"),
+                trailingIcon = {
+                    if (state.errores.containsKey("fuenteInformacion")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
+                supportingText = { state.errores["fuenteInformacion"]?.let { Text(it) } }
             )
 
             OutlinedTextField(
@@ -121,14 +132,28 @@ fun OportunidadFormScreen(
                 onValueChange = vm::onFechaDeteccionChange,
                 label = { Text("Fecha de detección (yyyy-MM-dd)") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errores.containsKey("fechaDeteccion"),
+                trailingIcon = {
+                    if (state.errores.containsKey("fechaDeteccion")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
+                supportingText = { state.errores["fechaDeteccion"]?.let { Text(it) } }
             )
 
             OutlinedTextField(
                 value = state.descripcion,
                 onValueChange = vm::onDescripcionChange,
                 label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errores.containsKey("descripcion"),
+                trailingIcon = {
+                    if (state.errores.containsKey("descripcion")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
+                supportingText = { state.errores["descripcion"]?.let { Text(it) } }
             )
 
             var prioridadSeleccionada by remember { mutableStateOf(state.prioridad ?: Prioridad.MEDIA) }
@@ -155,12 +180,26 @@ fun OportunidadFormScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
+            state.errores["prioridad"]?.let { error ->
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
             OutlinedTextField(
                 value = state.potencialComercial,
                 onValueChange = vm::onPotencialComercialChange,
                 label = { Text("Potencial comercial estimado") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errores.containsKey("potencialComercial"),
+                trailingIcon = {
+                    if (state.errores.containsKey("potencialComercial")) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Warning, contentDescription = "Error")
+                    }
+                },
+                supportingText = { state.errores["potencialComercial"]?.let { Text(it) } }
             )
 
             OutlinedTextField(

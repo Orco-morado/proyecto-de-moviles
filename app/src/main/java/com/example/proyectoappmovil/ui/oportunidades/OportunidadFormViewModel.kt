@@ -66,7 +66,7 @@ class OportunidadFormViewModel(
     }
 
     fun onDescripcionChange(value: String) {
-        _uiState.update { it.copy(descripcion = value) }
+        _uiState.update { it.copy(descripcion = value, errores = it.errores - "descripcion") }
     }
 
     fun onFuenteInformacionChange(value: String) {
@@ -78,7 +78,7 @@ class OportunidadFormViewModel(
     }
 
     fun onPotencialComercialChange(value: String) {
-        _uiState.update { it.copy(potencialComercial = value) }
+        _uiState.update { it.copy(potencialComercial = value, errores = it.errores - "potencialComercial") }
     }
 
     fun onObservacionesChange(value: String) {
@@ -96,10 +96,13 @@ class OportunidadFormViewModel(
     fun guardar() {
         val estado = _uiState.value
         val errores = OportunidadValidaciones.validar(
-            estado.nombre,
-            estado.tipo,
-            estado.fuenteInformacion,
-            estado.fechaDeteccion
+            nombre = estado.nombre,
+            tipo = estado.tipo,
+            descripcion = estado.descripcion,
+            fuenteInformacion = estado.fuenteInformacion,
+            fechaDeteccion = estado.fechaDeteccion,
+            prioridad = estado.prioridad,
+            potencialComercial = estado.potencialComercial
         )
 
         if (errores.isNotEmpty()) {

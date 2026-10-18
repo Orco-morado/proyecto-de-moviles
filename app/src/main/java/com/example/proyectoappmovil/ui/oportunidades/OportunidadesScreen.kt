@@ -48,6 +48,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +84,13 @@ fun OportunidadesScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { navController.navigate("oportunidad/form") },
+                icon = { Icon(Icons.Filled.Add, contentDescription = "Nueva") },
+                text = { Text("Nueva oportunidad") }
+            )
         }
     ) { innerPadding ->
         Column(
@@ -96,11 +108,13 @@ fun OportunidadesScreen(
             TextButton(onClick = { mostrarBusqueda = !mostrarBusqueda }) {
                 Text(if (mostrarBusqueda) "Ocultar búsqueda" else "Buscar")
             }
-            if (mostrarBusqueda) {
+
+            //Animación de la barra para no perderme
+            AnimatedVisibility(visible = mostrarBusqueda) {
                 OutlinedTextField(
                     value = textoBusqueda,
-                    onValueChange = { textoBusqueda = it },
-                    label = { Text("Buscar por nombre") },
+                    onValueChange = {textoBusqueda = it },
+                    label = {Text("Buscar por nombre")},
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -203,17 +217,7 @@ fun OportunidadesScreen(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(
-                    onClick = { navController.navigate("oportunidad/form") },
-                    modifier = Modifier.fillMaxWidth(0.6f)
-                ) {
-                    Text("Nueva oportunidad")
-                }
-            }
+
         }
     }
 }
