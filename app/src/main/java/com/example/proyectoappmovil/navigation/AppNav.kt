@@ -7,10 +7,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.proyectoappmovil.ui.alertas.AlertasScreen
+import com.example.proyectoappmovil.ui.contactos.ContactoFormScreen
+import com.example.proyectoappmovil.ui.contactos.ContactosScreen
 import com.example.proyectoappmovil.ui.eventos.EventosScreen
 import com.example.proyectoappmovil.ui.login.LoginScreen
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadesScreen
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadFormScreen
+import com.example.proyectoappmovil.ui.organizaciones.OrganizacionFormScreen
+import com.example.proyectoappmovil.ui.organizaciones.OrganizacionesScreen
 import com.example.proyectoappmovil.ui.seguimiento.SeguimientoScreen
 
 @Composable
@@ -69,6 +73,60 @@ fun AppNav() {
         ) { backStackEntry ->
             val oportunidadId = backStackEntry.arguments?.getLong("oportunidadId") ?: 0L
             SeguimientoScreen(oportunidadId = oportunidadId, navController = navController)
+        }
+
+        composable("organizaciones") {
+            OrganizacionesScreen(navController = navController)
+        }
+
+        composable("organizacion/form") {
+            OrganizacionFormScreen(navController = navController)
+        }
+
+        composable(
+            route = "organizacion/form/{id}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: 0L
+            OrganizacionFormScreen(id = id, navController = navController)
+        }
+
+        composable(
+            route = "contactos/{organizacionId}",
+            arguments = listOf(
+                navArgument("organizacionId") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val organizacionId = backStackEntry.arguments?.getLong("organizacionId") ?: 0L
+            ContactosScreen(organizacionId = organizacionId, navController = navController)
+        }
+
+        composable(
+            route = "contacto/form/{organizacionId}",
+            arguments = listOf(
+                navArgument("organizacionId") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val organizacionId = backStackEntry.arguments?.getLong("organizacionId") ?: 0L
+            ContactoFormScreen(organizacionId = organizacionId, navController = navController)
+        }
+
+        composable(
+            route = "contacto/form/{organizacionId}/{contactoId}",
+            arguments = listOf(
+                navArgument("organizacionId") { type = NavType.LongType },
+                navArgument("contactoId") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val organizacionId = backStackEntry.arguments?.getLong("organizacionId") ?: 0L
+            val contactoId = backStackEntry.arguments?.getLong("contactoId") ?: 0L
+            ContactoFormScreen(
+                organizacionId = organizacionId,
+                contactoId = contactoId,
+                navController = navController
+            )
         }
     }
 }

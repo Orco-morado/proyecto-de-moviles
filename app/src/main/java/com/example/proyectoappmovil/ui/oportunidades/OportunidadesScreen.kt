@@ -50,6 +50,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material3.Icon
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
@@ -76,6 +77,12 @@ fun OportunidadesScreen(
             TopAppBar(
                 title = { Text("Oportunidades") },
                 actions = {
+                    IconButton(onClick = { navController.navigate("organizaciones") }) {
+                        Icon(
+                            imageVector = Icons.Filled.Business,
+                            contentDescription = "Organizaciones"
+                        )
+                    }
                     IconButton(onClick = { navController.navigate("alertas/$username") }) {
                         Icon(
                             imageVector = Icons.Filled.Notifications,
