@@ -8,17 +8,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = AtenasRedLight,
-    onPrimary = AtenasRedDark,
-    secondary = WarmGrayLight,
-    tertiary = GoldLight
+    primary = DuocAzulClaro,
+    onPrimary = DuocAzulOscuro,
+    secondary = AtenasRedLight,
+    onSecondary = AtenasRedDark,
+    tertiary = GoldLight,
+    surface = DuocAzulOscuro,
+    onSurface = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = AtenasRed,
+    primary = DuocAzul,
     onPrimary = Color.White,
-    secondary = WarmGray,
-    tertiary = Gold
+    secondary = AtenasRed,
+    onSecondary = Color.White,
+    tertiary = Gold,
+    background = Color.White,
+    surface = Color.White
 )
 
 @Composable
@@ -30,6 +36,7 @@ fun ProyectoAppMovilTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = Typography,
         content = content
     )
 }
