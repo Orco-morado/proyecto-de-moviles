@@ -1,10 +1,14 @@
 package com.example.proyectoappmovil.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.proyectoappmovil.data.model.TipoOrganizacion
 
-@Entity(tableName = "organizaciones")
+@Entity(
+    tableName = "organizaciones",
+    indices = [Index("latitud", "longitud")]
+)
 data class Organizacion(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nombre: String,

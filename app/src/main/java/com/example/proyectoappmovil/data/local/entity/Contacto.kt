@@ -18,7 +18,7 @@ import com.example.proyectoappmovil.data.model.MedioContacto
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("organizacionId")]
+    indices = [Index("organizacionId"), Index("organizacionId", "estado")]
 )
 data class Contacto(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

@@ -22,7 +22,7 @@ import com.example.proyectoappmovil.data.model.TipoAccionSeguimiento
             onDelete = ForeignKey.SET_NULL
         )
     ],
-    indices = [Index("oportunidadId"), Index("usuarioResponsableId")]
+    indices = [Index("oportunidadId"), Index("usuarioResponsableId"), Index("fechaProximoSeguimiento")]
 )
 data class Seguimiento(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

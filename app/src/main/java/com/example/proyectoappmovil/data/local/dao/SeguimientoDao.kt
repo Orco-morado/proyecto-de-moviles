@@ -14,6 +14,9 @@ interface SeguimientoDao {
     @Query("SELECT * FROM seguimientos WHERE oportunidadId = :oportunidadId ORDER BY fechaHora DESC")
     fun observarPorOportunidad(oportunidadId: Long): Flow<List<Seguimiento>>
 
+    @Query("SELECT * FROM seguimientos ORDER BY fechaHora DESC")
+    fun observarTodos(): Flow<List<Seguimiento>>
+
     @Query(
         """
         SELECT * FROM seguimientos
@@ -23,6 +26,9 @@ interface SeguimientoDao {
         """
     )
     fun observarPendientes(hasta: Long): Flow<List<Seguimiento>>
+
+    @Query("SELECT COUNT(*) FROM seguimientos")
+    suspend fun contar(): Int
 
     @Insert
     suspend fun insertar(seguimiento: Seguimiento): Long

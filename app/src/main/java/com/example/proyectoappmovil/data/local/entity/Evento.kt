@@ -16,7 +16,7 @@ import com.example.proyectoappmovil.data.model.TipoEvento
             onDelete = ForeignKey.SET_NULL
         )
     ],
-    indices = [Index("organizacionId")]
+    indices = [Index("organizacionId"), Index("fechaInicio")]
 )
 data class Evento(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

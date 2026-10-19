@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.proyectoappmovil.data.local.dao.ContactoDao
 import com.example.proyectoappmovil.data.local.dao.EventoDao
 import com.example.proyectoappmovil.data.local.dao.OportunidadDao
@@ -30,7 +32,7 @@ import com.example.proyectoappmovil.data.local.entity.Usuario
         Seguimiento::class,
         ResultadoActivacion::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -48,13 +50,22 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var instancia: AppDatabase? = null
 
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Solo se agregaron índices; no requiere migración de datos
+            }
+        }
+
         fun obtener(context: Context): AppDatabase =
             instancia ?: synchronized(this) {
                 instancia ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "agencia.db"
-                ).fallbackToDestructiveMigration().build().also { instancia = it }
+                )
+                    .addMigrations(MIGRATION_3_4)
+                    .fallbackToDestructiveMigration()
+                    .build().also { instancia = it }
             }
     }
 }
