@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -40,14 +37,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.proyectoappmovil.R
 import com.example.proyectoappmovil.ui.theme.AppButton
 import com.example.proyectoappmovil.ui.theme.AppCard
-import com.example.proyectoappmovil.ui.theme.AppErrorText
 import com.example.proyectoappmovil.ui.theme.AppTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,
-    vm: LoginViewModel = viewModel()
+    vm: LoginViewModel = viewModel(
+        factory = LoginViewModel.Factory()
+    )
 ) {
     val state by vm.uiState.collectAsStateWithLifecycle()
     var showPass by remember { mutableStateOf(false) }
@@ -140,7 +138,7 @@ fun LoginScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End
+                        horizontalArrangement = Arrangement.End
                     ) {
                         AppButton(
                             onClick = {
@@ -166,7 +164,6 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(
-        navController = rememberNavController(),
-        vm = LoginViewModel()
+        navController = rememberNavController()
     )
 }

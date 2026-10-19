@@ -11,6 +11,11 @@ import kotlinx.coroutines.launch
 
 class App : Application() {
 
+    companion object {
+        lateinit var instance: App
+            private set
+    }
+
     lateinit var container: AppContainer
         private set
 
@@ -18,8 +23,9 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         val baseDeDatos = AppDatabase.obtener(this)
-        container = AppContainer(baseDeDatos)
+        container = AppContainer(baseDeDatos, this)
         alcance.launch {
             SeedData.cargarSiEstaVacio(baseDeDatos)
         }

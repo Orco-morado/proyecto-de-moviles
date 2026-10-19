@@ -17,34 +17,79 @@ import com.example.proyectoappmovil.data.model.Prioridad
 import com.example.proyectoappmovil.data.model.TipoAccionSeguimiento
 import com.example.proyectoappmovil.data.model.TipoEvento
 import com.example.proyectoappmovil.data.model.TipoOrganizacion
+import org.mindrot.jbcrypt.BCrypt
 
 object SeedData {
 
     private const val DIA = 24L * 60 * 60 * 1000
+
+    private fun hashPassword(password: String): Pair<String, String> {
+        val salt = BCrypt.gensalt()
+        val hash = BCrypt.hashpw(password, salt)
+        return hash to salt
+    }
 
     suspend fun cargarSiEstaVacio(baseDeDatos: AppDatabase) {
         if (baseDeDatos.usuarioDao().contar() > 0) return
 
         val ahora = System.currentTimeMillis()
 
-        val idAna = baseDeDatos.usuarioDao().insertar(
+        val (krisHash, krisSalt) = hashPassword("kris123")
+        val idKris = baseDeDatos.usuarioDao().insertar(
             Usuario(
-                nombre = "Ana Torres",
-                perfil = PerfilUsuario.EJECUTIVO,
-                area = "Comercial",
-                zona = "Región Metropolitana",
-                estadoCuenta = EstadoUsuario.ACTIVO,
-                fechaCreacion = ahora,
-                fechaActualizacion = ahora
-            )
-        )
-        val idMarcos = baseDeDatos.usuarioDao().insertar(
-            Usuario(
-                nombre = "Marcos Rivas",
+                username = "kris",
+                nombre = "Kris",
                 perfil = PerfilUsuario.SUPERVISOR,
                 area = "Comercial",
                 zona = "Región Metropolitana",
                 estadoCuenta = EstadoUsuario.ACTIVO,
+                passwordHash = krisHash,
+                salt = krisSalt,
+                fechaCreacion = ahora,
+                fechaActualizacion = ahora
+            )
+        )
+        val (vicenteHash, vicenteSalt) = hashPassword("vicente123")
+        val idVicente = baseDeDatos.usuarioDao().insertar(
+            Usuario(
+                username = "vicente",
+                nombre = "Vicente",
+                perfil = PerfilUsuario.EJECUTIVO,
+                area = "Comercial",
+                zona = "Región Metropolitana",
+                estadoCuenta = EstadoUsuario.ACTIVO,
+                passwordHash = vicenteHash,
+                salt = vicenteSalt,
+                fechaCreacion = ahora,
+                fechaActualizacion = ahora
+            )
+        )
+        val (lucasHash, lucasSalt) = hashPassword("lucas123")
+        baseDeDatos.usuarioDao().insertar(
+            Usuario(
+                username = "lucas",
+                nombre = "Lucas",
+                perfil = PerfilUsuario.MARKETING,
+                area = "Marketing y Comunicaciones",
+                zona = "Región Metropolitana",
+                estadoCuenta = EstadoUsuario.ACTIVO,
+                passwordHash = lucasHash,
+                salt = lucasSalt,
+                fechaCreacion = ahora,
+                fechaActualizacion = ahora
+            )
+        )
+        val (batistoniHash, batistoniSalt) = hashPassword("batistoni123")
+        baseDeDatos.usuarioDao().insertar(
+            Usuario(
+                username = "batistoni",
+                nombre = "Batistoni",
+                perfil = PerfilUsuario.MARKETING,
+                area = "Marketing y Comunicaciones",
+                zona = "Región Metropolitana",
+                estadoCuenta = EstadoUsuario.ACTIVO,
+                passwordHash = batistoniHash,
+                salt = batistoniSalt,
                 fechaCreacion = ahora,
                 fechaActualizacion = ahora
             )
@@ -232,7 +277,7 @@ object SeedData {
                 descripcion = "Participar con stand de convenios dentales y veterinarios",
                 fuenteInformacion = "LinkedIn",
                 fechaDeteccion = ahora - 5 * DIA,
-                responsableId = idAna,
+                responsableId = idVicente,
                 prioridad = Prioridad.ALTA,
                 potencialComercial = "Alto: 300 trabajadores estimados",
                 estado = EstadoOportunidad.CONTACTO_REALIZADO,
@@ -248,7 +293,7 @@ object SeedData {
                 descripcion = "Presentar convenios a funcionarios municipales",
                 fuenteInformacion = "Sitio web institucional",
                 fechaDeteccion = ahora - 12 * DIA,
-                responsableId = idAna,
+                responsableId = idVicente,
                 prioridad = Prioridad.MEDIA,
                 potencialComercial = "Medio: 150 funcionarios estimados",
                 estado = EstadoOportunidad.PROPUESTA_ENVIADA,
@@ -264,7 +309,7 @@ object SeedData {
                 descripcion = "Activación comercial en centro comercial",
                 fuenteInformacion = "Instagram",
                 fechaDeteccion = ahora - 3 * DIA,
-                responsableId = idMarcos,
+                responsableId = idKris,
                 prioridad = Prioridad.BAJA,
                 potencialComercial = "Por evaluar",
                 estado = EstadoOportunidad.EVENTO_IDENTIFICADO,
@@ -280,7 +325,7 @@ object SeedData {
                 descripcion = "Stand de convenios de salud en feria interna",
                 fuenteInformacion = "Referencia interna",
                 fechaDeteccion = ahora - 60 * DIA,
-                responsableId = idAna,
+                responsableId = idVicente,
                 prioridad = Prioridad.MEDIA,
                 potencialComercial = "Medio: 200 trabajadores estimados",
                 estado = EstadoOportunidad.ACTIVACION_REALIZADA,
@@ -293,7 +338,7 @@ object SeedData {
         baseDeDatos.seguimientoDao().insertar(
             Seguimiento(
                 oportunidadId = idOportunidadFeria,
-                usuarioResponsableId = idAna,
+                usuarioResponsableId = idVicente,
                 tipoAccion = TipoAccionSeguimiento.PRIMER_CONTACTO,
                 fechaHora = ahora - 4 * DIA,
                 resultado = "Se contactó a Camila Rojas por correo",
@@ -305,7 +350,7 @@ object SeedData {
         baseDeDatos.seguimientoDao().insertar(
             Seguimiento(
                 oportunidadId = idOportunidadFeria,
-                usuarioResponsableId = idAna,
+                usuarioResponsableId = idVicente,
                 tipoAccion = TipoAccionSeguimiento.ENVIO_PRESENTACION,
                 fechaHora = ahora - 2 * DIA,
                 resultado = "Presentación enviada con convenios disponibles",
@@ -317,7 +362,7 @@ object SeedData {
         baseDeDatos.seguimientoDao().insertar(
             Seguimiento(
                 oportunidadId = idOportunidadMunicipal,
-                usuarioResponsableId = idAna,
+                usuarioResponsableId = idVicente,
                 tipoAccion = TipoAccionSeguimiento.ENVIO_PROPUESTA,
                 fechaHora = ahora - 1 * DIA,
                 resultado = "Propuesta enviada a la municipalidad",
@@ -329,7 +374,7 @@ object SeedData {
         baseDeDatos.seguimientoDao().insertar(
             Seguimiento(
                 oportunidadId = idOportunidadPlaza,
-                usuarioResponsableId = idMarcos,
+                usuarioResponsableId = idKris,
                 tipoAccion = TipoAccionSeguimiento.BUSQUEDA_CONTACTO,
                 fechaHora = ahora - 6 * DIA,
                 resultado = "Se identificó a Valentina Soto como coordinadora de marketing",

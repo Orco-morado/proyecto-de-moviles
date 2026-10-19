@@ -1,11 +1,15 @@
 package com.example.proyectoappmovil.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class PerfilUsuario(val etiqueta: String) {
     EJECUTIVO("Ejecutivo comercial"),
     SUPERVISOR("Supervisor comercial"),
     MARKETING("Marketing y comunicaciones")
 }
 
+@Serializable
 enum class EstadoUsuario(val etiqueta: String) {
     ACTIVO("Activo"),
     INACTIVO("Inactivo")

@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.proyectoappmovil.data.local.AppDatabase
+import com.example.proyectoappmovil.data.local.SeedData
 import com.example.proyectoappmovil.data.local.entity.Contacto
 import com.example.proyectoappmovil.data.local.entity.Evento
 import com.example.proyectoappmovil.data.local.entity.Oportunidad
@@ -11,6 +12,7 @@ import com.example.proyectoappmovil.data.local.entity.Organizacion
 import com.example.proyectoappmovil.data.local.entity.ResultadoActivacion
 import com.example.proyectoappmovil.data.local.entity.Seguimiento
 import com.example.proyectoappmovil.data.local.entity.Usuario
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -18,7 +20,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [34])
 class SeedDataTest {
 
     @get:Rule
@@ -48,7 +55,7 @@ class SeedDataTest {
         val seguimientosCount = db.seguimientoDao().contar()
         val resultadosCount = db.resultadoActivacionDao().observarTodos().first().size
 
-        assertEquals(2, usuariosCount)
+        assertEquals(4, usuariosCount)
         assertEquals(3, orgsCount)
         assertEquals(3, contactosCount)
         assertEquals(4, eventosCount)
@@ -67,29 +74,29 @@ class SeedDataTest {
 
         usuarios.forEach { assertNotNull(it.id) }
         organizaciones.forEach { assertNotNull(it.id) }
-        contactos.forEach {
-            assertTrue(db.organizacionDao().obtenerPorId(it.organizacionId) != null)
+        for (contacto in contactos) {
+            assertTrue(db.organizacionDao().obtenerPorId(contacto.organizacionId) != null)
         }
-        eventos.forEach {
-            it.organizacionId?.let { orgId ->
+        for (evento in eventos) {
+            evento.organizacionId?.let { orgId ->
                 assertNotNull(db.organizacionDao().obtenerPorId(orgId))
             }
         }
-        oportunidades.forEach {
-            assertNotNull(db.eventoDao().obtenerPorId(it.eventoId!!))
-            assertNotNull(db.usuarioDao().obtenerPorId(it.responsableId!!))
+        for (oportunidad in oportunidades) {
+            assertNotNull(db.eventoDao().obtenerPorId(oportunidad.eventoId!!))
+            assertNotNull(db.usuarioDao().obtenerPorId(oportunidad.responsableId!!))
         }
-        seguimientos.forEach {
-            assertNotNull(db.oportunidadDao().obtenerPorId(it.oportunidadId))
-            it.usuarioResponsableId?.let { userId ->
+        for (seguimiento in seguimientos) {
+            assertNotNull(db.oportunidadDao().obtenerPorId(seguimiento.oportunidadId))
+            seguimiento.usuarioResponsableId?.let { userId ->
                 assertNotNull(db.usuarioDao().obtenerPorId(userId))
             }
         }
-        resultados.forEach {
-            assertNotNull(db.oportunidadDao().obtenerPorId(it.oportunidadId))
+        for (resultado in resultados) {
+            assertNotNull(db.oportunidadDao().obtenerPorId(resultado.oportunidadId))
         }
 
-        // Verificar total de filas insertadas = 21
+        // Verificar total de filas insertadas = 23
         val totalFilas = db.usuarioDao().contar() +
             db.organizacionDao().observarTodas().first().size +
             db.contactoDao().observarTodos().first().size +
@@ -97,6 +104,6 @@ class SeedDataTest {
             db.oportunidadDao().observarTodas().first().size +
             db.seguimientoDao().contar() +
             db.resultadoActivacionDao().observarTodos().first().size
-        assertEquals(21, totalFilas)
+        assertEquals(23, totalFilas)
     }
 }

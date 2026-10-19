@@ -32,7 +32,7 @@ import com.example.proyectoappmovil.data.local.entity.Usuario
         Seguimiento::class,
         ResultadoActivacion::class
     ],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

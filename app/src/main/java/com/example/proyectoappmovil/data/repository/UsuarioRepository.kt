@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface UsuarioRepository {
     fun observarTodos(): Flow<List<Usuario>>
     suspend fun obtenerPorId(id: Long): Usuario?
+    suspend fun obtenerPorUsername(username: String): Usuario?
     suspend fun insertar(usuario: Usuario): Long
     suspend fun actualizar(usuario: Usuario)
     suspend fun eliminar(usuario: Usuario)
@@ -19,6 +20,8 @@ class UsuarioRepositoryImpl(
     override fun observarTodos(): Flow<List<Usuario>> = dao.observarTodos()
 
     override suspend fun obtenerPorId(id: Long): Usuario? = dao.obtenerPorId(id)
+
+    override suspend fun obtenerPorUsername(username: String): Usuario? = dao.obtenerPorUsername(username)
 
     override suspend fun insertar(usuario: Usuario): Long = dao.insertar(usuario)
 

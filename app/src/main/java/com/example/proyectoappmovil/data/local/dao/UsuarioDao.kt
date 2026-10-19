@@ -17,6 +17,9 @@ interface UsuarioDao {
     @Query("SELECT * FROM usuarios WHERE id = :id")
     suspend fun obtenerPorId(id: Long): Usuario?
 
+    @Query("SELECT * FROM usuarios WHERE username = :username COLLATE NOCASE")
+    suspend fun obtenerPorUsername(username: String): Usuario?
+
     @Query("SELECT COUNT(*) FROM usuarios")
     suspend fun contar(): Int
 

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.test.core.app.ApplicationProvider
+import com.example.proyectoappmovil.data.local.AppDatabase
 
 class TestDatabase {
 

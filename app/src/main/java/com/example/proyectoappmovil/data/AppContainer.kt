@@ -1,6 +1,8 @@
 package com.example.proyectoappmovil.data
 
+import android.content.Context
 import com.example.proyectoappmovil.data.local.AppDatabase
+import com.example.proyectoappmovil.data.repository.AuthRepository
 import com.example.proyectoappmovil.data.repository.ContactoRepository
 import com.example.proyectoappmovil.data.repository.ContactoRepositoryImpl
 import com.example.proyectoappmovil.data.repository.EventoRepository
@@ -13,10 +15,11 @@ import com.example.proyectoappmovil.data.repository.ResultadoActivacionRepositor
 import com.example.proyectoappmovil.data.repository.ResultadoActivacionRepositoryImpl
 import com.example.proyectoappmovil.data.repository.SeguimientoRepository
 import com.example.proyectoappmovil.data.repository.SeguimientoRepositoryImpl
+import com.example.proyectoappmovil.data.repository.SessionManager
 import com.example.proyectoappmovil.data.repository.UsuarioRepository
 import com.example.proyectoappmovil.data.repository.UsuarioRepositoryImpl
 
-class AppContainer(baseDeDatos: AppDatabase) {
+class AppContainer(baseDeDatos: AppDatabase, context: Context) {
 
     val usuarioRepository: UsuarioRepository =
         UsuarioRepositoryImpl(baseDeDatos.usuarioDao())
@@ -38,4 +41,10 @@ class AppContainer(baseDeDatos: AppDatabase) {
 
     val resultadoActivacionRepository: ResultadoActivacionRepository =
         ResultadoActivacionRepositoryImpl(baseDeDatos.resultadoActivacionDao())
+
+    val authRepository: AuthRepository =
+        AuthRepository(usuarioRepository)
+
+    val sessionManager: SessionManager =
+        SessionManager.create(context)
 }

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -38,6 +39,11 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
@@ -65,10 +71,17 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("org.mindrot:jbcrypt:0.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     testImplementation(libs.junit)
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("androidx.room:room-testing:2.6.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test:rules:1.5.0")
+    testImplementation("org.robolectric:robolectric:4.14.1")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation("androidx.room:room-testing:2.6.1")
