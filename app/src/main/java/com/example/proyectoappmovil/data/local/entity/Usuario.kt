@@ -1,11 +1,13 @@
 package com.example.proyectoappmovil.data.local.entity
 
+import android.annotation.SuppressLint
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.proyectoappmovil.data.model.EstadoUsuario
 import com.example.proyectoappmovil.data.model.PerfilUsuario
 import kotlinx.serialization.Serializable
 
+@SuppressLint("UnsafeOptInUsageError")
 @Entity(tableName = "usuarios")
 @Serializable
 data class Usuario(

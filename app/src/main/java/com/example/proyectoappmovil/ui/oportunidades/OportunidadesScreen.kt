@@ -54,6 +54,7 @@ import androidx.compose.material.icons.filled.Business
 import androidx.compose.material3.Icon
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
+import androidx.compose.material.icons.filled.ExitToApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +88,19 @@ fun OportunidadesScreen(
                         Icon(
                             imageVector = Icons.Filled.Notifications,
                             contentDescription = "Alertas"
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            navController.navigate("login") {
+                                popUpTo("login") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ExitToApp,
+                            contentDescription = "Cerrar sesión"
                         )
                     }
                 }

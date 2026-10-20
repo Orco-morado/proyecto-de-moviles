@@ -34,17 +34,17 @@ object SeedData {
 
         val ahora = System.currentTimeMillis()
 
-        val (krisHash, krisSalt) = hashPassword("kris123")
-        val idKris = baseDeDatos.usuarioDao().insertar(
+        val (crisHash, crisSalt) = hashPassword("cris123")
+        val idCris = baseDeDatos.usuarioDao().insertar(
             Usuario(
-                username = "kris",
-                nombre = "Kris",
+                username = "cristopher",
+                nombre = "Cristopher",
                 perfil = PerfilUsuario.SUPERVISOR,
                 area = "Comercial",
                 zona = "Región Metropolitana",
                 estadoCuenta = EstadoUsuario.ACTIVO,
-                passwordHash = krisHash,
-                salt = krisSalt,
+                passwordHash = crisHash,
+                salt = crisSalt,
                 fechaCreacion = ahora,
                 fechaActualizacion = ahora
             )
@@ -309,7 +309,7 @@ object SeedData {
                 descripcion = "Activación comercial en centro comercial",
                 fuenteInformacion = "Instagram",
                 fechaDeteccion = ahora - 3 * DIA,
-                responsableId = idKris,
+                responsableId = idCris,
                 prioridad = Prioridad.BAJA,
                 potencialComercial = "Por evaluar",
                 estado = EstadoOportunidad.EVENTO_IDENTIFICADO,
@@ -374,7 +374,7 @@ object SeedData {
         baseDeDatos.seguimientoDao().insertar(
             Seguimiento(
                 oportunidadId = idOportunidadPlaza,
-                usuarioResponsableId = idKris,
+                usuarioResponsableId = idCris,
                 tipoAccion = TipoAccionSeguimiento.BUSQUEDA_CONTACTO,
                 fechaHora = ahora - 6 * DIA,
                 resultado = "Se identificó a Valentina Soto como coordinadora de marketing",

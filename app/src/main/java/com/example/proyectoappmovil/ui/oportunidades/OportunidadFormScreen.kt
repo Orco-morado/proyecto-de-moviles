@@ -39,6 +39,9 @@ import com.example.proyectoappmovil.data.model.Prioridad
 import com.example.proyectoappmovil.data.model.TipoEvento
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadRepositorioPrueba
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OportunidadFormScreen(
@@ -62,7 +65,8 @@ fun OportunidadFormScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(

@@ -34,7 +34,7 @@ data class OportunidadFormUiState(
 
 class OportunidadFormViewModel(
     private val repositorio: OportunidadRepository,
-    idOportunidad: Long?
+    private val idOportunidad: Long?
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OportunidadFormUiState())
@@ -42,7 +42,7 @@ class OportunidadFormViewModel(
 
     init {
         viewModelScope.launch {
-            if (idOportunidad != null) {
+            if (idOportunidad != null && idOportunidad > 0L) {
                 repositorio.obtenerPorId(idOportunidad)?.let { oportunidad ->
                     _uiState.update {
                         it.copy(
@@ -114,9 +114,14 @@ class OportunidadFormViewModel(
 
         viewModelScope.launch {
             val formato = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-            val fechaMillis = formato.parse(estado.fechaDeteccion)?.time ?: System.currentTimeMillis()
+            val fechaMillis = try {
+                formato.parse(estado.fechaDeteccion)?.time ?: System.currentTimeMillis()
+            } catch (e: Exception) {
+                System.currentTimeMillis()
+            }
+
             val oportunidad = Oportunidad(
-                id = 0,
+                id = idOportunidad ?: 0L,
                 nombre = estado.nombre,
                 tipo = estado.tipo ?: TipoEvento.OTRA,
                 descripcion = estado.descripcion,
@@ -131,10 +136,16 @@ class OportunidadFormViewModel(
                 observaciones = estado.observaciones
             )
 
-            val idGenerado = repositorio.insertar(oportunidad)
-
-            _uiState.update {
-                it.copy(esGuardando = false, mensaje = if (idGenerado > 0) "Oportunidad registrada" else "No se pudo registrar")
+            if (idOportunidad == null || idOportunidad == 0L) {
+                val idGenerado = repositorio.insertar(oportunidad)
+                _uiState.update {
+                    it.copy(esGuardando = false, mensaje = if (idGenerado > 0) "Oportunidad registrada" else "No se pudo registrar")
+                }
+            } else {
+                repositorio.actualizar(oportunidad)
+                _uiState.update {
+                    it.copy(esGuardando = false, mensaje = "Oportunidad registrada")
+                }
             }
         }
     }
