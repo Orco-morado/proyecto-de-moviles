@@ -2,6 +2,7 @@ package com.example.proyectoappmovil.data
 
 import android.content.Context
 import com.example.proyectoappmovil.data.local.AppDatabase
+import com.example.proyectoappmovil.data.remote.OportunidadRemoteDataSourceImpl
 import com.example.proyectoappmovil.data.repository.AuthRepository
 import com.example.proyectoappmovil.data.repository.ContactoRepository
 import com.example.proyectoappmovil.data.repository.ContactoRepositoryImpl
@@ -33,8 +34,18 @@ class AppContainer(baseDeDatos: AppDatabase, context: Context) {
     val eventoRepository: EventoRepository =
         EventoRepositoryImpl(baseDeDatos.eventoDao())
 
+    private val oportunidadRemoteDataSource =
+        OportunidadRemoteDataSourceImpl(
+            oportunidadDao = baseDeDatos.oportunidadDao(),
+            eventoDao = baseDeDatos.eventoDao(),
+            usuarioDao = baseDeDatos.usuarioDao()
+        )
+
     val oportunidadRepository: OportunidadRepository =
-        OportunidadRepositoryImpl(baseDeDatos.oportunidadDao())
+        OportunidadRepositoryImpl(
+            dao = baseDeDatos.oportunidadDao(),
+            remoteDataSource = oportunidadRemoteDataSource
+        )
 
     val seguimientoRepository: SeguimientoRepository =
         SeguimientoRepositoryImpl(baseDeDatos.seguimientoDao())

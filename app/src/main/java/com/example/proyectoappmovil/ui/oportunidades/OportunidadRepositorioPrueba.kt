@@ -30,4 +30,6 @@ class OportunidadRepositorioPrueba : OportunidadRepository {
     override suspend fun actualizar(oportunidad: Oportunidad) = Unit
 
     override suspend fun eliminar(oportunidad: Oportunidad) = Unit
+
+    override suspend fun refrescar() = Unit
 }
