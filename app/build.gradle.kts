@@ -1,3 +1,6 @@
+// CAMBIO REALIZADO: Se reemplazó "http://10.0.2.2:8080/" por la URL de Firestore (terminada en "/")
+// en los 3 bloques: defaultConfig, debug y release.
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,13 +22,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://firestore.googleapis.com/v1/projects/purpletoken-f9eb4/databases/(default)/documents/\"")
     }
 
     buildTypes {
         debug {
             enableUnitTestCoverage = true
-            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            buildConfigField("String", "API_BASE_URL", "\"https://firestore.googleapis.com/v1/projects/purpletoken-f9eb4/databases/(default)/documents/\"")
         }
         release {
             isMinifyEnabled = false
@@ -33,7 +36,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            buildConfigField("String", "API_BASE_URL", "\"https://firestore.googleapis.com/v1/projects/purpletoken-f9eb4/databases/(default)/documents/\"")
         }
     }
     compileOptions {
@@ -42,6 +45,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs += "-opt-in=kotlinx.serialization.InternalSerializationApi"
     }
     buildFeatures {
         compose = true
@@ -87,6 +91,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     testImplementation(libs.junit)
     testImplementation("androidx.arch.core:core-testing:2.2.0")

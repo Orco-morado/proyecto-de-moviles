@@ -10,6 +10,7 @@ import com.example.proyectoappmovil.data.repository.EventoRepository
 import com.example.proyectoappmovil.data.repository.EventoRepositoryImpl
 import com.example.proyectoappmovil.data.repository.OportunidadRepository
 import com.example.proyectoappmovil.data.repository.OportunidadRepositoryImpl
+
 import com.example.proyectoappmovil.data.repository.OrganizacionRepository
 import com.example.proyectoappmovil.data.repository.OrganizacionRepositoryImpl
 import com.example.proyectoappmovil.data.repository.ResultadoActivacionRepository

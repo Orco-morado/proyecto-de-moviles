@@ -1,3 +1,6 @@
+// CAMBIO REALIZADO: Se agregó toFirestoreJson() para envolver el POST y PATCH en {"fields": ...}
+// con stringValue/integerValue, y se usa documentId para que actualizar y eliminar funcionen por ID.
+
 package com.example.proyectoappmovil.data.remote
 
 import com.example.proyectoappmovil.BuildConfig
@@ -9,21 +12,20 @@ import com.example.proyectoappmovil.data.model.EstadoOportunidad
 import com.example.proyectoappmovil.data.model.Prioridad
 import com.example.proyectoappmovil.data.model.TipoEvento
 import com.example.proyectoappmovil.data.repository.OportunidadRemoteDataSource
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
-@Serializable
 data class OportunidadDto(
     val id: Long = 0,
     val nombre: String = "",
@@ -42,28 +44,26 @@ data class OportunidadDto(
 
 interface OportunidadApi {
 
-    @GET("api/oportunidades")
-    suspend fun obtenerTodas(): List<OportunidadDto>
+    @GET("purpletoken")
+    suspend fun obtenerTodas(): JsonObject
 
-    @POST("api/oportunidades")
-    suspend fun crear(@Body oportunidad: OportunidadDto): OportunidadDto
+    @POST("purpletoken")
+    suspend fun crear(
+        @Query("documentId") documentId: String,
+        @Body body: JsonObject
+    ): JsonObject
 
-    @PUT("api/oportunidades/{id}")
+    @PATCH("purpletoken/{id}")
     suspend fun actualizar(
-        @Path("id") id: Long,
-        @Body oportunidad: OportunidadDto
-    ): OportunidadDto
+        @Path("id") id: String,
+        @Body body: JsonObject
+    ): JsonObject
 
-    @DELETE("api/oportunidades/{id}")
-    suspend fun eliminar(@Path("id") id: Long)
+    @DELETE("purpletoken/{id}")
+    suspend fun eliminar(@Path("id") id: String)
 }
 
 object ApiClient {
-
-    private val json = Json {
-        ignoreUnknownKeys = true
-        coerceInputValues = true
-    }
 
     fun crearOportunidadApi(baseUrl: String = BuildConfig.API_BASE_URL): OportunidadApi {
         val logging = HttpLoggingInterceptor().apply {
@@ -76,7 +76,7 @@ object ApiClient {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(OportunidadApi::class.java)
     }
@@ -132,6 +132,48 @@ fun Oportunidad.toDto(): OportunidadDto {
     )
 }
 
+private fun OportunidadDto.toFirestoreJson(): JsonObject {
+    fun strField(value: String) = JsonObject().apply { addProperty("stringValue", value) }
+    fun intField(value: Long) = JsonObject().apply { addProperty("integerValue", value.toString()) }
+
+    val fields = JsonObject().apply {
+        add("id", intField(id))
+        add("nombre", strField(nombre))
+        add("tipo", strField(tipo))
+        add("descripcion", strField(descripcion))
+        add("fuenteInformacion", strField(fuenteInformacion))
+        add("fechaDeteccion", intField(fechaDeteccion))
+        if (responsableId != null) add("responsableId", intField(responsableId))
+        add("prioridad", strField(prioridad))
+        add("potencialComercial", strField(potencialComercial))
+        add("estado", strField(estado))
+        if (eventoId != null) add("eventoId", intField(eventoId))
+        add("fechaActualizacion", intField(fechaActualizacion))
+        add("observaciones", strField(observaciones))
+    }
+
+    return JsonObject().apply { add("fields", fields) }
+}
+
+private fun JsonObject.toOportunidadDto(): OportunidadDto {
+    val fields = getAsJsonObject("fields")
+    return OportunidadDto(
+        id = fields?.getAsJsonObject("id")?.get("integerValue")?.asLong ?: 0L,
+        nombre = fields?.getAsJsonObject("nombre")?.get("stringValue")?.asString ?: "",
+        tipo = fields?.getAsJsonObject("tipo")?.get("stringValue")?.asString ?: TipoEvento.OTRA.name,
+        descripcion = fields?.getAsJsonObject("descripcion")?.get("stringValue")?.asString ?: "",
+        fuenteInformacion = fields?.getAsJsonObject("fuenteInformacion")?.get("stringValue")?.asString ?: "",
+        fechaDeteccion = fields?.getAsJsonObject("fechaDeteccion")?.get("integerValue")?.asLong ?: 0L,
+        responsableId = fields?.getAsJsonObject("responsableId")?.get("integerValue")?.asLong,
+        prioridad = fields?.getAsJsonObject("prioridad")?.get("stringValue")?.asString ?: Prioridad.MEDIA.name,
+        potencialComercial = fields?.getAsJsonObject("potencialComercial")?.get("stringValue")?.asString ?: "",
+        estado = fields?.getAsJsonObject("estado")?.get("stringValue")?.asString ?: EstadoOportunidad.EVENTO_IDENTIFICADO.name,
+        eventoId = fields?.getAsJsonObject("eventoId")?.get("integerValue")?.asLong,
+        fechaActualizacion = fields?.getAsJsonObject("fechaActualizacion")?.get("integerValue")?.asLong ?: 0L,
+        observaciones = fields?.getAsJsonObject("observaciones")?.get("stringValue")?.asString ?: ""
+    )
+}
+
 class OportunidadRemoteDataSourceImpl(
     private val oportunidadDao: OportunidadDao,
     private val eventoDao: EventoDao,
@@ -153,20 +195,27 @@ class OportunidadRemoteDataSourceImpl(
     }
 
     override suspend fun obtenerTodas(): List<Oportunidad> {
-        return api.obtenerTodas().map { mapearConFkSegura(it) }
+        val json = api.obtenerTodas()
+        val documents = json.getAsJsonArray("documents") ?: return emptyList()
+        return documents.map { element ->
+            mapearConFkSegura(element.asJsonObject.toOportunidadDto())
+        }
     }
 
     override suspend fun crear(oportunidad: Oportunidad): Oportunidad {
-        val respuesta = api.crear(oportunidad.toDto())
-        return mapearConFkSegura(respuesta)
+        val idFinal = if (oportunidad.id == 0L) System.currentTimeMillis() else oportunidad.id
+        val dto = oportunidad.copy(id = idFinal).toDto()
+        val respuesta = api.crear(idFinal.toString(), dto.toFirestoreJson())
+        return mapearConFkSegura(respuesta.toOportunidadDto())
     }
 
     override suspend fun actualizar(oportunidad: Oportunidad): Oportunidad {
-        val respuesta = api.actualizar(oportunidad.id, oportunidad.toDto())
-        return mapearConFkSegura(respuesta)
+        val dto = oportunidad.toDto()
+        val respuesta = api.actualizar(oportunidad.id.toString(), dto.toFirestoreJson())
+        return mapearConFkSegura(respuesta.toOportunidadDto())
     }
 
     override suspend fun eliminar(id: Long) {
-        api.eliminar(id)
+        api.eliminar(id.toString())
     }
 }
