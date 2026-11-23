@@ -14,7 +14,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -99,13 +99,15 @@ class OportunidadesViewModelTest {
         every { repositorio.observarTodas() } returns flowOf(listOf(local))
         coEvery { repositorio.refrescar() } throws RuntimeException("Sin conexión")
         val vm = OportunidadesViewModel(repositorio)
+        val colector = launch { vm.oportunidades.collect { } }
 
         vm.refrescar()
         advanceUntilIdle()
 
         assertEquals("Sin conexión", vm.error.value)
         assertFalse(vm.cargando.value)
-        assertEquals(listOf(local), vm.oportunidades.first())
+        assertEquals(listOf(local), vm.oportunidades.value)
+        colector.cancel()
     }
 
     @Test
@@ -128,13 +130,15 @@ class OportunidadesViewModelTest {
         every { repositorio.observarTodas() } returns flowOf(listOf(local))
         coEvery { repositorio.eliminar(local) } throws RuntimeException("Sin conexión")
         val vm = OportunidadesViewModel(repositorio)
+        val colector = launch { vm.oportunidades.collect { } }
 
         vm.eliminarOportunidad(local)
         advanceUntilIdle()
 
         assertEquals("Sin conexión", vm.error.value)
         assertFalse(vm.cargando.value)
-        assertEquals(listOf(local), vm.oportunidades.first())
+        assertEquals(listOf(local), vm.oportunidades.value)
+        colector.cancel()
     }
 
     @Test
