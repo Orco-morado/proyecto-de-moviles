@@ -3,9 +3,10 @@ package com.example.proyectoappmovil.data.local.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.proyectoappmovil.data.local.entity.Oportunidad
 import com.example.proyectoappmovil.data.model.EstadoOportunidad
 import com.example.proyectoappmovil.data.model.Prioridad
@@ -53,8 +54,21 @@ interface OportunidadDao {
     @Insert
     suspend fun insertar(oportunidad: Oportunidad): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertarTodos(oportunidades: List<Oportunidad>)
+    @Upsert
+    suspend fun upsertTodos(oportunidades: List<Oportunidad>)
+
+    @Query("DELETE FROM oportunidades WHERE id NOT IN (:ids)")
+    suspend fun eliminarNoPresentes(ids: List<Long>)
+
+    @Transaction
+    suspend fun sincronizar(oportunidades: List<Oportunidad>) {
+        if (oportunidades.isEmpty()) {
+            eliminarTodos()
+            return
+        }
+        upsertTodos(oportunidades)
+        eliminarNoPresentes(oportunidades.map { it.id })
+    }
 
     @Query("DELETE FROM oportunidades WHERE id = :id")
     suspend fun eliminarPorId(id: Long)

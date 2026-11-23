@@ -2,13 +2,9 @@ package com.example.proyectoappmovil.data.validation
 
 import com.example.proyectoappmovil.data.model.Prioridad
 import com.example.proyectoappmovil.data.model.TipoEvento
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.proyectoappmovil.utils.FechaUtils
 
 object OportunidadValidaciones {
-
-    private val FORMATO_FECHA = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     fun validar(
         nombre: String,
@@ -40,13 +36,8 @@ object OportunidadValidaciones {
             errores["potencialComercial"] = "El potencial comercial es obligatorio"
         }
 
-        val fechaValida = try {
-            FORMATO_FECHA.parse(fechaDeteccion) != null
-        } catch (_: ParseException) {
-            false
-        }
-        if (fechaDeteccion.isBlank() || !fechaValida) {
-            errores["fechaDeteccion"] = "La fecha debe tener formato yyyy-MM-dd"
+        if (fechaDeteccion.isBlank() || !FechaUtils.esFechaValida(fechaDeteccion)) {
+            errores["fechaDeteccion"] = "La fecha debe tener formato dd/MM/yyyy"
         }
 
         return errores

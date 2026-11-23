@@ -1,13 +1,9 @@
 package com.example.proyectoappmovil.data.validation
 
 import com.example.proyectoappmovil.data.model.TipoAccionSeguimiento
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.proyectoappmovil.utils.FechaUtils
 
 object SeguimientoValidaciones {
-
-    private val FORMATO_FECHA = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     fun validar(
         tipoAccion: TipoAccionSeguimiento?,
@@ -26,15 +22,8 @@ object SeguimientoValidaciones {
         if (proximaAccion.isNotBlank() && fechaProximo.isBlank()) {
             errores["fechaProximo"] = "Indica la fecha del próximo seguimiento"
         }
-        if (fechaProximo.isNotBlank()) {
-            val fechaValida = try {
-                FORMATO_FECHA.parse(fechaProximo) != null
-            } catch (_: ParseException) {
-                false
-            }
-            if (!fechaValida) {
-                errores["fechaProximo"] = "La fecha debe tener formato yyyy-MM-dd"
-            }
+        if (fechaProximo.isNotBlank() && !FechaUtils.esFechaValida(fechaProximo)) {
+            errores["fechaProximo"] = "La fecha debe tener formato dd/MM/yyyy"
         }
 
         return errores

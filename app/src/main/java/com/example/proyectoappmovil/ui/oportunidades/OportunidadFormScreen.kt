@@ -134,7 +134,7 @@ fun OportunidadFormScreen(
             OutlinedTextField(
                 value = state.fechaDeteccion,
                 onValueChange = vm::onFechaDeteccionChange,
-                label = { Text("Fecha de detección (yyyy-MM-dd)") },
+                label = { Text("Fecha de detección (dd/MM/yyyy)") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errores.containsKey("fechaDeteccion"),

@@ -45,8 +45,7 @@ import com.example.proyectoappmovil.notificaciones.NotificacionHelper
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadRepositorioPrueba
 import com.example.proyectoappmovil.ui.seguimiento.SeguimientoRepositorioPrueba
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.proyectoappmovil.utils.toFechaCorta
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +60,6 @@ fun AlertasScreen(
     val enEspera by vm.oportunidadesEnEspera.collectAsStateWithLifecycle()
     val contexto = LocalContext.current
 
-    val formatoFecha = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
     val ahora = System.currentTimeMillis()
 
     Scaffold(
@@ -155,7 +153,7 @@ fun AlertasScreen(
                         )
                         seguimiento.fechaProximoSeguimiento?.let { fecha ->
                             Text(
-                                text = "Próximo: ${formatoFecha.format(fecha)}" +
+                                text = "Próximo: ${fecha.toFechaCorta()}" +
                                     if (vencido) "  (vencido)" else "",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (vencido) {
@@ -206,7 +204,7 @@ fun AlertasScreen(
                         )
                         Text(
                             text = "${oportunidad.estado.etiqueta}  ·  actualizada el " +
-                                formatoFecha.format(oportunidad.fechaActualizacion),
+                                oportunidad.fechaActualizacion.toFechaCorta(),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

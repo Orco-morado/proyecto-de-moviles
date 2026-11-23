@@ -19,8 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.proyectoappmovil.utils.FechaUtils
 
 data class SeguimientoFormUiState(
     val tipoAccion: TipoAccionSeguimiento? = null,
@@ -111,9 +110,8 @@ class SeguimientoViewModel(
         _uiState.update { it.copy(esGuardando = true, mensaje = null) }
 
         viewModelScope.launch {
-            val formato = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val fechaMillis = if (estado.fechaProximo.isNotBlank()) {
-                formato.parse(estado.fechaProximo)?.time
+                FechaUtils.parsearFecha(estado.fechaProximo)
             } else {
                 null
             }

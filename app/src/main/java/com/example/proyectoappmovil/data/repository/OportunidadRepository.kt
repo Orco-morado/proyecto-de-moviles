@@ -87,8 +87,6 @@ class OportunidadRepositoryImpl(
 
     override suspend fun refrescar() {
         val remote = remoteDataSource ?: return
-        val remotas = remote.obtenerTodas()
-        dao.eliminarTodos()
-        dao.insertarTodos(remotas)
+        dao.sincronizar(remote.obtenerTodas())
     }
 }

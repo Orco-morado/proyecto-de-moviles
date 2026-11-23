@@ -12,6 +12,7 @@ import com.example.proyectoappmovil.data.model.Prioridad
 import com.example.proyectoappmovil.data.model.TipoEvento
 import com.example.proyectoappmovil.data.validation.OportunidadValidaciones
 import com.example.proyectoappmovil.data.repository.OportunidadRepository
+import com.example.proyectoappmovil.utils.FechaUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,7 +50,7 @@ class OportunidadFormViewModel(
                             nombre = oportunidad.nombre,
                             descripcion = oportunidad.descripcion,
                             fuenteInformacion = oportunidad.fuenteInformacion,
-                            fechaDeteccion = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(oportunidad.fechaDeteccion),
+                            fechaDeteccion = FechaUtils.formatearFecha(oportunidad.fechaDeteccion),
                             potencialComercial = oportunidad.potencialComercial,
                             observaciones = oportunidad.observaciones,
                             tipo = oportunidad.tipo,
@@ -113,12 +114,8 @@ class OportunidadFormViewModel(
         _uiState.update { it.copy(esGuardando = true, mensaje = null) }
 
         viewModelScope.launch {
-            val formato = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-            val fechaMillis = try {
-                formato.parse(estado.fechaDeteccion)?.time ?: System.currentTimeMillis()
-            } catch (e: Exception) {
-                System.currentTimeMillis()
-            }
+            val fechaMillis = FechaUtils.parsearFecha(estado.fechaDeteccion)
+                ?: System.currentTimeMillis()
 
             val oportunidad = Oportunidad(
                 id = idOportunidad ?: 0L,
@@ -136,16 +133,20 @@ class OportunidadFormViewModel(
                 observaciones = estado.observaciones
             )
 
-            if (idOportunidad == null || idOportunidad == 0L) {
-                val idGenerado = repositorio.insertar(oportunidad)
-                _uiState.update {
-                    it.copy(esGuardando = false, mensaje = if (idGenerado > 0) "Oportunidad registrada" else "No se pudo registrar")
+            try {
+                if (idOportunidad == null || idOportunidad == 0L) {
+                    val idGenerado = repositorio.insertar(oportunidad)
+                    _uiState.update {
+                        it.copy(mensaje = if (idGenerado > 0) "Oportunidad registrada" else "No se pudo registrar")
+                    }
+                } else {
+                    repositorio.actualizar(oportunidad)
+                    _uiState.update { it.copy(mensaje = "Oportunidad registrada") }
                 }
-            } else {
-                repositorio.actualizar(oportunidad)
-                _uiState.update {
-                    it.copy(esGuardando = false, mensaje = "Oportunidad registrada")
-                }
+            } catch (_: Exception) {
+                _uiState.update { it.copy(mensaje = "No se pudo conectar con el servidor") }
+            } finally {
+                _uiState.update { it.copy(esGuardando = false) }
             }
         }
     }

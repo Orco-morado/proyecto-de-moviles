@@ -13,40 +13,40 @@ class OportunidadValidacionesTest {
 
     @Test
     fun nombreVacioGeneraError() {
-        val errores = validador.validar("", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "Web", "2026-01-01", Prioridad.ALTA, "Alto")
+        val errores = validador.validar("", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "Web", "01/01/2026", Prioridad.ALTA, "Alto")
         assertEquals(1, errores.size)
         assertTrue(errores.containsKey("nombre"))
     }
 
     @Test
     fun tipoNuloGeneraError() {
-        val errores = validador.validar("Oportunidad de prueba", null, "Descripcion valida", "Web", "2026-01-01", Prioridad.ALTA, "Alto")
+        val errores = validador.validar("Oportunidad de prueba", null, "Descripcion valida", "Web", "01/01/2026", Prioridad.ALTA, "Alto")
         assertTrue(errores.containsKey("tipo"))
     }
 
     @Test
     fun descripcionVaciaGeneraError() {
-        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "", "Web", "2026-01-01", Prioridad.ALTA, "Alto")
+        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "", "Web", "01/01/2026", Prioridad.ALTA, "Alto")
         assertEquals(1, errores.size)
         assertTrue(errores.containsKey("descripcion"))
     }
 
     @Test
     fun fuenteVaciaGeneraError() {
-        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "", "2026-01-01", Prioridad.ALTA, "Alto")
+        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "", "01/01/2026", Prioridad.ALTA, "Alto")
         assertTrue(errores.containsKey("fuenteInformacion"))
     }
 
     @Test
     fun prioridadNulaGeneraError() {
-        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "Web", "2026-01-01", null, "Alto")
+        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "Web", "01/01/2026", null, "Alto")
         assertEquals(1, errores.size)
         assertTrue(errores.containsKey("prioridad"))
     }
 
     @Test
     fun potencialComercialVacioGeneraError() {
-        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "Web", "2026-01-01", Prioridad.ALTA, "")
+        val errores = validador.validar("Oportunidad de prueba", TipoEvento.EVENTO_CORPORATIVO, "Descripcion valida", "Web", "01/01/2026", Prioridad.ALTA, "")
         assertEquals(1, errores.size)
         assertTrue(errores.containsKey("potencialComercial"))
     }
@@ -59,7 +59,7 @@ class OportunidadValidacionesTest {
 
     @Test
     fun datosValidosNoGeneranErrores() {
-        val errores = validador.validar("Oportunidad de prueba", TipoEvento.FERIA_EMPRESARIAL, "Descripcion valida", "Web", "2026-10-15", Prioridad.MEDIA, "Medio")
+        val errores = validador.validar("Oportunidad de prueba", TipoEvento.FERIA_EMPRESARIAL, "Descripcion valida", "Web", "15/10/2026", Prioridad.MEDIA, "Medio")
         assertTrue(errores.isEmpty())
     }
 }

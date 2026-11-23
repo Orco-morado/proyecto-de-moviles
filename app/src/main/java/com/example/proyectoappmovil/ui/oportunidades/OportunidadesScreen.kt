@@ -52,8 +52,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.proyectoappmovil.data.local.entity.Oportunidad
 import com.example.proyectoappmovil.data.model.EstadoOportunidad
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.proyectoappmovil.utils.toFechaCorta
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -243,8 +242,6 @@ fun OportunidadesScreen(
                 }
             }
 
-            val formatoFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp)
@@ -275,7 +272,7 @@ fun OportunidadesScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = formatoFecha.format(oportunidad.fechaActualizacion),
+                                        text = oportunidad.fechaActualizacion.toFechaCorta(),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )

@@ -73,8 +73,7 @@ import com.example.proyectoappmovil.data.model.TipoAccionSeguimiento
 import com.example.proyectoappmovil.notificaciones.NotificacionHelper
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadRepositorioPrueba
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.proyectoappmovil.utils.toFechaCorta
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,8 +89,6 @@ fun SeguimientoScreen(
     val contexto = LocalContext.current
 
     var mostrarFormulario by remember { mutableStateOf(false) }
-
-    val formatoFecha = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
 
     LaunchedEffect(key1 = state.mensaje) {
         val mensajeActual = state.mensaje
@@ -194,7 +191,7 @@ fun SeguimientoScreen(
             }
 
             items(seguimientos, key = { it.id }) { seguimiento ->
-                FilaSeguimiento(seguimiento = seguimiento, formatoFecha = formatoFecha)
+                FilaSeguimiento(seguimiento = seguimiento)
             }
         }
     }
@@ -289,7 +286,7 @@ private fun FormularioSeguimiento(
             OutlinedTextField(
                 value = state.fechaProximo,
                 onValueChange = vm::onFechaProximoChange,
-                label = { Text("Fecha próximo seguimiento (yyyy-MM-dd)") },
+                label = { Text("Fecha próximo seguimiento (dd/MM/yyyy)") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -381,8 +378,7 @@ private fun TextoError(
 
 @Composable
 private fun FilaSeguimiento(
-    seguimiento: Seguimiento,
-    formatoFecha: SimpleDateFormat
+    seguimiento: Seguimiento
 ) {
     val atrasado = seguimiento.fechaProximoSeguimiento?.let { fecha ->
         fecha + 24L * 60 * 60 * 1000 < System.currentTimeMillis()
@@ -423,7 +419,7 @@ private fun FilaSeguimiento(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = formatoFecha.format(seguimiento.fechaHora),
+                        text = seguimiento.fechaHora.toFechaCorta(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -444,7 +440,7 @@ private fun FilaSeguimiento(
 
                 seguimiento.fechaProximoSeguimiento?.let { fecha ->
                     Text(
-                        text = "Próximo seguimiento: ${formatoFecha.format(fecha)}" +
+                        text = "Próximo seguimiento: ${fecha.toFechaCorta()}" +
                             if (atrasado) "  (atrasado)" else "",
                         style = MaterialTheme.typography.bodySmall,
                         color = if (atrasado) {

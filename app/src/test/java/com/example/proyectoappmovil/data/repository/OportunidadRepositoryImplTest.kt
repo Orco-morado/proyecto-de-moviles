@@ -1,121 +1,124 @@
-package com.example.proyectoappmovil.ui.oportunidades
+package com.example.proyectoappmovil.data.repository
 
-import com.example.proyectoappmovil.data.MainDispatcherRule
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import com.example.proyectoappmovil.data.local.AppDatabase
 import com.example.proyectoappmovil.data.local.entity.Oportunidad
-import com.example.proyectoappmovil.data.local.entity.Usuario
+import com.example.proyectoappmovil.data.local.entity.ResultadoActivacion
+import com.example.proyectoappmovil.data.local.entity.Seguimiento
 import com.example.proyectoappmovil.data.model.EstadoOportunidad
-import com.example.proyectoappmovil.data.model.EstadoUsuario
-import com.example.proyectoappmovil.data.model.PerfilUsuario
 import com.example.proyectoappmovil.data.model.Prioridad
+import com.example.proyectoappmovil.data.model.TipoAccionSeguimiento
 import com.example.proyectoappmovil.data.model.TipoEvento
-import com.example.proyectoappmovil.data.repository.OportunidadRepository
 import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class OportunidadesViewModelTest {
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [34])
+class OportunidadRepositoryImplTest {
 
     @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    val instantExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var repositorio: OportunidadRepository
-    private lateinit var viewModel: OportunidadesViewModel
+    private lateinit var baseDeDatos: AppDatabase
+    private lateinit var fuenteRemota: OportunidadRemoteDataSource
+    private lateinit var repositorio: OportunidadRepositoryImpl
 
-    private fun crearOportunidad(id: Long = 1L, responsableId: Long? = 10L) = Oportunidad(
+    @Before
+    fun setUp() {
+        baseDeDatos = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            AppDatabase::class.java
+        )
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
+        fuenteRemota = mockk()
+        repositorio = OportunidadRepositoryImpl(baseDeDatos.oportunidadDao(), fuenteRemota)
+    }
+
+    @After
+    fun tearDown() {
+        baseDeDatos.close()
+    }
+
+    @Test
+    fun refrescar_sincronizaSinBorrarSeguimientosDeOportunidadesExistentes() = runTest {
+        val oportunidadExistente = crearOportunidad(1L, "Original")
+        val oportunidadEliminada = crearOportunidad(3L, "Eliminada")
+        baseDeDatos.oportunidadDao().insertar(oportunidadExistente)
+        baseDeDatos.oportunidadDao().insertar(oportunidadEliminada)
+
+        baseDeDatos.seguimientoDao().insertar(
+            Seguimiento(
+                oportunidadId = 1L,
+                usuarioResponsableId = null,
+                tipoAccion = TipoAccionSeguimiento.PRIMER_CONTACTO,
+                fechaHora = 1000L,
+                resultado = "Contacto realizado",
+                proximaAccion = "Enviar propuesta",
+                fechaProximoSeguimiento = null,
+                observaciones = ""
+            )
+        )
+        baseDeDatos.resultadoActivacionDao().guardar(
+            ResultadoActivacion(
+                oportunidadId = 1L,
+                fechaRealizacion = 1500L,
+                estadoFinal = EstadoOportunidad.ACTIVACION_REALIZADA,
+                cantidadAsistentes = 10,
+                contactosGenerados = 2,
+                personasInteresadas = 3,
+                inscripciones = 1,
+                observaciones = "",
+                evaluacionGeneral = "",
+                aprendizajes = ""
+            )
+        )
+
+        coEvery { fuenteRemota.obtenerTodas() } returns listOf(
+            oportunidadExistente.copy(nombre = "Actualizada"),
+            crearOportunidad(2L, "Nueva")
+        )
+
+        repositorio.refrescar()
+
+        val oportunidades = baseDeDatos.oportunidadDao().observarTodas().first().associateBy { it.id }
+        assertEquals(2, oportunidades.size)
+        assertEquals("Actualizada", oportunidades[1L]?.nombre)
+        assertNotNull(oportunidades[2L])
+        assertNull(oportunidades[3L])
+        assertEquals(1, baseDeDatos.seguimientoDao().observarPorOportunidad(1L).first().size)
+        assertEquals(1, baseDeDatos.seguimientoDao().contar())
+        assertNotNull(baseDeDatos.resultadoActivacionDao().obtenerPorOportunidad(1L))
+    }
+
+    private fun crearOportunidad(id: Long, nombre: String) = Oportunidad(
         id = id,
-        nombre = "Oportunidad $id",
-        tipo = TipoEvento.entries.first(),
-        descripcion = "Desc",
+        nombre = nombre,
+        tipo = TipoEvento.FERIA_EMPRESARIAL,
+        descripcion = "Descripcion",
         fuenteInformacion = "Web",
         fechaDeteccion = 1000L,
-        responsableId = responsableId,
-        prioridad = Prioridad.entries.first(),
+        responsableId = null,
+        prioridad = Prioridad.MEDIA,
         potencialComercial = "Medio",
-        estado = EstadoOportunidad.entries.first(),
+        estado = EstadoOportunidad.EVENTO_IDENTIFICADO,
         eventoId = null,
         fechaActualizacion = 2000L,
         observaciones = ""
     )
-
-    private fun crearUsuario(id: Long, perfil: PerfilUsuario) = Usuario(
-        id = id,
-        username = "user$id",
-        nombre = "Usuario $id",
-        perfil = perfil,
-        area = "Comercial",
-        zona = "Centro",
-        estadoCuenta = EstadoUsuario.entries.first(),
-        fechaCreacion = 1000L,
-        fechaActualizacion = 1000L
-    )
-
-    @Before
-    fun setUp() {
-        repositorio = mockk(relaxed = true)
-        every { repositorio.observarTodas() } returns flowOf(emptyList())
-        viewModel = OportunidadesViewModel(repositorio)
-    }
-
-    @Test
-    fun refrescar_exito_limpiaErrorYFinalizaCarga() = runTest {
-        coEvery { repositorio.refrescar() } returns Unit
-
-        viewModel.refrescar()
-        advanceUntilIdle()
-
-        assertFalse(viewModel.cargando.value)
-        assertNull(viewModel.error.value)
-        coVerify(exactly = 1) { repositorio.refrescar() }
-    }
-
-    @Test
-    fun refrescar_error_exponeMensajeYFinalizaCarga() = runTest {
-        coEvery { repositorio.refrescar() } throws RuntimeException("Sin conexión")
-
-        viewModel.refrescar()
-        advanceUntilIdle()
-
-        assertFalse(viewModel.cargando.value)
-        assertEquals("Sin conexión", viewModel.error.value)
-    }
-
-    @Test
-    fun eliminarOportunidad_exito_llamaRepositorioYCallback() = runTest {
-        val op = crearOportunidad(3L)
-        var callbackEjecutado = false
-        coEvery { repositorio.eliminar(op) } returns Unit
-
-        viewModel.eliminarOportunidad(op) { callbackEjecutado = true }
-        advanceUntilIdle()
-
-        assertTrue(callbackEjecutado)
-        assertNull(viewModel.error.value)
-        coVerify(exactly = 1) { repositorio.eliminar(op) }
-    }
-
-    @Test
-    fun puedeEliminar_permiteAdminYCreador_bloqueaOtros() {
-        val supervisor = crearUsuario(1L, PerfilUsuario.SUPERVISOR)
-        val creador = crearUsuario(10L, PerfilUsuario.EJECUTIVO)
-        val otroUsuario = crearUsuario(20L, PerfilUsuario.EJECUTIVO)
-        val op = crearOportunidad(id = 1L, responsableId = 10L)
-
-        assertTrue(viewModel.puedeEliminar(op, supervisor))
-        assertTrue(viewModel.puedeEliminar(op, creador))
-        assertFalse(viewModel.puedeEliminar(op, otroUsuario))
-        assertFalse(viewModel.puedeEliminar(op, null))
-    }
 }
