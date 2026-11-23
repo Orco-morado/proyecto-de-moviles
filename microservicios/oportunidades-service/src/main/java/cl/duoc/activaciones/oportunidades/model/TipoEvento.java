@@ -1,0 +1,12 @@
+package cl.duoc.activaciones.oportunidades.model;
+
+public enum TipoEvento {
+    EVENTO_CORPORATIVO,
+    FERIA_EMPRESARIAL,
+    ACTIVIDAD_MUNICIPAL,
+    JORNADA_BENEFICIOS,
+    FERIA_INSTITUCIONAL,
+    ACTIVIDAD_TRABAJADORES,
+    ACTIVACION_COMERCIAL,
+    OTRA
+}
