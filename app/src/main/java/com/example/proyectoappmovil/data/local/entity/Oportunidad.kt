@@ -28,16 +28,16 @@ import com.example.proyectoappmovil.data.model.TipoEvento
 )
 data class Oportunidad(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val nombre: String,
-    val tipo: TipoEvento,
-    val descripcion: String,
-    val fuenteInformacion: String,
-    val fechaDeteccion: Long,
-    val responsableId: Long?,
-    val prioridad: Prioridad,
-    val potencialComercial: String,
-    val estado: EstadoOportunidad,
-    val eventoId: Long?,
-    val fechaActualizacion: Long,
-    val observaciones: String
+    val nombre: String = "",
+    val tipo: TipoEvento = TipoEvento.OTRA,
+    val descripcion: String = "",
+    val fuenteInformacion: String = "",
+    val fechaDeteccion: Long = 0L,
+    val responsableId: Long? = 0L,
+    val prioridad: Prioridad = Prioridad.MEDIA,
+    val potencialComercial: String = "",
+    val estado: EstadoOportunidad = EstadoOportunidad.EN_EVALUACION,
+    val eventoId: Long? = 0L,
+    val fechaActualizacion: Long = 0L,
+    val observaciones: String = ""
 )
