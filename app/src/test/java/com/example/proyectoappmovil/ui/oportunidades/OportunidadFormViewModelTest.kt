@@ -4,7 +4,6 @@ import com.example.proyectoappmovil.data.MainDispatcherRule
 import com.example.proyectoappmovil.data.model.Prioridad
 import com.example.proyectoappmovil.data.model.TipoEvento
 import com.example.proyectoappmovil.data.repository.OportunidadRepository
-import io.mockk.any
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

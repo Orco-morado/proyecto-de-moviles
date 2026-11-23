@@ -25,6 +25,16 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"https://firestore.googleapis.com/v1/projects/purpletoken-f9eb4/databases/(default)/documents/\"")
     }
 
+    // Firma de aplicación (keystore de práctica)
+    signingConfigs {
+        create("release") {
+            storeFile = file("practica-release.jks")
+            storePassword = "123456"
+            keyAlias = "practica_key"
+            keyPassword = "123456"
+        }
+    }
+
     buildTypes {
         debug {
             enableUnitTestCoverage = true
@@ -32,6 +42,7 @@ android {
         }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
