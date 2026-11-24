@@ -244,19 +244,118 @@ class OportunidadRemoteTest {
     }
 
     @Test
-    fun obtenerTodas_conErrores400404500_lanzaExcepcion() = runTest {
-        server.enqueue(MockResponse().setResponseCode(400))
+    fun obtenerTodas_error404_lanzaExcepcion() = runTest {
         server.enqueue(MockResponse().setResponseCode(404))
-        server.enqueue(MockResponse().setResponseCode(500))
-
         val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
 
-        var fallo400 = false
+        var fallo = false
         try {
             dataSource.obtenerTodas()
         } catch (e: Exception) {
-            fallo400 = true
+            fallo = true
         }
-        assertTrue(fallo400)
+        assertTrue(fallo)
     }
+
+    @Test
+    fun obtenerTodas_error500_lanzaExcepcion() = runTest {
+        server.enqueue(MockResponse().setResponseCode(500))
+        val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
+
+        var fallo = false
+        try {
+            dataSource.obtenerTodas()
+        } catch (e: Exception) {
+            fallo = true
+        }
+        assertTrue(fallo)
+    }
+
+    @Test
+    fun crear_error400_lanzaExcepcion() = runTest {
+        server.enqueue(MockResponse().setResponseCode(400))
+        val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
+
+        var fallo = false
+        try {
+            dataSource.crear(crearOportunidad(0L))
+        } catch (e: Exception) {
+            fallo = true
+        }
+        assertTrue(fallo)
+    }
+
+    @Test
+    fun actualizar_error404_lanzaExcepcion() = runTest {
+        server.enqueue(MockResponse().setResponseCode(404))
+        val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
+
+        var fallo = false
+        try {
+            dataSource.actualizar(crearOportunidad(12L))
+        } catch (e: Exception) {
+            fallo = true
+        }
+        assertTrue(fallo)
+    }
+
+    @Test
+    fun eliminar_error500_lanzaExcepcion() = runTest {
+        server.enqueue(MockResponse().setResponseCode(500))
+        val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
+
+        var fallo = false
+        try {
+            dataSource.eliminar(12L)
+        } catch (e: Exception) {
+            fallo = true
+        }
+        assertTrue(fallo)
+    }
+
+    @Test
+    fun mapearConFkSegura_fkInexistentes_devuelveNulls() = runTest {
+        val respuestaJson = """
+            {
+              "id": 8,
+              "nombre": "Con FKs ausentes",
+              "tipo": "OTRA",
+              "descripcion": "",
+              "fuenteInformacion": "",
+              "fechaDeteccion": 0,
+              "responsableId": 99,
+              "prioridad": "MEDIA",
+              "potencialComercial": "",
+              "estado": "EVENTO_IDENTIFICADO",
+              "eventoId": 50,
+              "fechaActualizacion": 0,
+              "observaciones": ""
+            }
+        """.trimIndent()
+        server.enqueue(MockResponse().setResponseCode(200).setBody(respuestaJson))
+        coEvery { eventoDao.obtenerPorId(50L) } returns null
+        coEvery { usuarioDao.obtenerPorId(99L) } returns null
+        val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
+
+        val creada = dataSource.crear(crearOportunidad(0L))
+
+        assertNull(creada.responsableId)
+        assertNull(creada.eventoId)
+    }
+
+    private fun crearOportunidad(id: Long) = Oportunidad(
+        id = id,
+        nombre = "Oportunidad $id",
+        tipo = TipoEvento.OTRA,
+        descripcion = "",
+        fuenteInformacion = "",
+        fechaDeteccion = 0L,
+        responsableId = null,
+        prioridad = Prioridad.MEDIA,
+        potencialComercial = "",
+        estado = EstadoOportunidad.EVENTO_IDENTIFICADO,
+        eventoId = null,
+        fechaActualizacion = 0L,
+        observaciones = ""
+    )
 }
