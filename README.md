@@ -107,6 +107,12 @@ Si se usa otro usuario o contraseña, ajustar las variables de entorno `DB_USERN
 3. Ejecutar la app en un emulador con API 24 o superior.
 4. Verificar que el microservicio esté corriendo antes de usar oportunidades.
 
+Cuando la app apunta a `http://127.0.0.1:8080/`, redirigir el puerto del equipo al dispositivo antes de abrirla:
+
+```powershell
+adb reverse tcp:8080 tcp:8080
+```
+
 ### 4. Credenciales de prueba
 | Usuario | Contraseña |
 | :--- | :--- |
