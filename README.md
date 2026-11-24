@@ -146,9 +146,3 @@ Cobertura reportada en la última ejecución:
 | Validaciones de oportunidades | 100% | 100% |
 
 ---
-
-## Tablero Trello
-
-[LINK_TRELLO]
-
-![Tablero Trello](docs/img/trello.png)
