@@ -93,29 +93,25 @@ class OportunidadRemoteTest {
     }
 
     @Test
-    fun obtenerTodas_conMockWebServer_deserializaYLimpiaFksInexistentes() = runTest {
+    fun obtenerTodas_conMockWebServer_deserializaJsonPlano() = runTest {
         val json = """
-            {
-              "documents": [
-                {
-                  "fields": {
-                    "id": { "integerValue": "1" },
-                    "nombre": { "stringValue": "Expo Santiago" },
-                    "tipo": { "stringValue": "OTRA" },
-                    "descripcion": { "stringValue": "Evento masivo" },
-                    "fuenteInformacion": { "stringValue": "LinkedIn" },
-                    "fechaDeteccion": { "integerValue": "1700000000000" },
-                    "responsableId": { "integerValue": "99" },
-                    "prioridad": { "stringValue": "ALTA" },
-                    "potencialComercial": { "stringValue": "Alto" },
-                    "estado": { "stringValue": "EVENTO_IDENTIFICADO" },
-                    "eventoId": { "integerValue": "50" },
-                    "fechaActualizacion": { "integerValue": "1700000005000" },
-                    "observaciones": { "stringValue": "Revisar" }
-                  }
-                }
-              ]
-            }
+            [
+              {
+                "id": 1,
+                "nombre": "Expo Santiago",
+                "tipo": "OTRA",
+                "descripcion": "Evento masivo",
+                "fuenteInformacion": "LinkedIn",
+                "fechaDeteccion": 1700000000000,
+                "responsableId": 99,
+                "prioridad": "ALTA",
+                "potencialComercial": "Alto",
+                "estado": "EVENTO_IDENTIFICADO",
+                "eventoId": 50,
+                "fechaActualizacion": 1700000005000,
+                "observaciones": "Revisar"
+              }
+            ]
         """.trimIndent()
 
         server.enqueue(MockResponse().setResponseCode(200).setBody(json))
@@ -130,27 +126,29 @@ class OportunidadRemoteTest {
         assertEquals(Prioridad.ALTA, resultado[0].prioridad)
         assertNull(resultado[0].eventoId)
         assertNull(resultado[0].responsableId)
+
+        val request = server.takeRequest()
+        assertEquals("GET", request.method)
+        assertTrue(request.path!!.startsWith("/api/oportunidades"))
     }
 
     @Test
-    fun crear_enviaPostYMantieneFksExistentes() = runTest {
+    fun crear_enviaPostYDevuelveOportunidadCreada() = runTest {
         val respuestaJson = """
             {
-              "fields": {
-                "id": { "integerValue": "7" },
-                "nombre": { "stringValue": "Activación Mall" },
-                "tipo": { "stringValue": "OTRA" },
-                "descripcion": { "stringValue": "" },
-                "fuenteInformacion": { "stringValue": "" },
-                "fechaDeteccion": { "integerValue": "0" },
-                "responsableId": { "integerValue": "1" },
-                "prioridad": { "stringValue": "MEDIA" },
-                "potencialComercial": { "stringValue": "" },
-                "estado": { "stringValue": "EVENTO_IDENTIFICADO" },
-                "eventoId": { "integerValue": "2" },
-                "fechaActualizacion": { "integerValue": "0" },
-                "observaciones": { "stringValue": "" }
-              }
+              "id": 7,
+              "nombre": "Activación Mall",
+              "tipo": "OTRA",
+              "descripcion": "",
+              "fuenteInformacion": "",
+              "fechaDeteccion": 0,
+              "responsableId": 1,
+              "prioridad": "MEDIA",
+              "potencialComercial": "",
+              "estado": "EVENTO_IDENTIFICADO",
+              "eventoId": 2,
+              "fechaActualizacion": 0,
+              "observaciones": ""
             }
         """.trimIndent()
 
@@ -179,10 +177,58 @@ class OportunidadRemoteTest {
 
         val request = server.takeRequest()
         assertEquals("POST", request.method)
-        assertTrue(request.path!!.startsWith("/purpletoken?documentId="))
+        assertTrue(request.path!!.startsWith("/api/oportunidades"))
         assertEquals(7L, creada.id)
         assertEquals(1L, creada.responsableId)
         assertEquals(2L, creada.eventoId)
+    }
+
+    @Test
+    fun actualizar_enviaPutConIdCorrecto() = runTest {
+        val respuestaJson = """
+            {
+              "id": 12,
+              "nombre": "Actualizada",
+              "tipo": "OTRA",
+              "descripcion": "",
+              "fuenteInformacion": "",
+              "fechaDeteccion": 0,
+              "responsableId": 1,
+              "prioridad": "MEDIA",
+              "potencialComercial": "",
+              "estado": "EVENTO_IDENTIFICADO",
+              "eventoId": null,
+              "fechaActualizacion": 0,
+              "observaciones": ""
+            }
+        """.trimIndent()
+
+        server.enqueue(MockResponse().setResponseCode(200).setBody(respuestaJson))
+        coEvery { usuarioDao.obtenerPorId(1L) } returns mockk<Usuario>()
+
+        val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
+        val actualizada = dataSource.actualizar(
+            Oportunidad(
+                id = 12L,
+                nombre = "Actualizada",
+                tipo = TipoEvento.OTRA,
+                descripcion = "",
+                fuenteInformacion = "",
+                fechaDeteccion = 0L,
+                responsableId = 1L,
+                prioridad = Prioridad.MEDIA,
+                potencialComercial = "",
+                estado = EstadoOportunidad.EVENTO_IDENTIFICADO,
+                eventoId = null,
+                fechaActualizacion = 0L,
+                observaciones = ""
+            )
+        )
+
+        val request = server.takeRequest()
+        assertEquals("PUT", request.method)
+        assertTrue(request.path!!.startsWith("/api/oportunidades/12"))
+        assertEquals(12L, actualizada.id)
     }
 
     @Test
@@ -194,6 +240,23 @@ class OportunidadRemoteTest {
 
         val request = server.takeRequest()
         assertEquals("DELETE", request.method)
-        assertEquals("/purpletoken/12", request.path)
+        assertTrue(request.path!!.startsWith("/api/oportunidades/12"))
+    }
+
+    @Test
+    fun obtenerTodas_conErrores400404500_lanzaExcepcion() = runTest {
+        server.enqueue(MockResponse().setResponseCode(400))
+        server.enqueue(MockResponse().setResponseCode(404))
+        server.enqueue(MockResponse().setResponseCode(500))
+
+        val dataSource = OportunidadRemoteDataSourceImpl(oportunidadDao, eventoDao, usuarioDao, api)
+
+        var fallo400 = false
+        try {
+            dataSource.obtenerTodas()
+        } catch (e: Exception) {
+            fallo400 = true
+        }
+        assertTrue(fallo400)
     }
 }

@@ -272,6 +272,7 @@ object SeedData {
 
         val idOportunidadFeria = baseDeDatos.oportunidadDao().insertar(
             Oportunidad(
+                id = 0L,
                 nombre = "Feria de Beneficios InnovaTech 2026",
                 tipo = TipoEvento.FERIA_EMPRESARIAL,
                 descripcion = "Participar con stand de convenios dentales y veterinarios",
@@ -288,6 +289,7 @@ object SeedData {
         )
         val idOportunidadMunicipal = baseDeDatos.oportunidadDao().insertar(
             Oportunidad(
+                id = 0L,
                 nombre = "Jornada de Bienestar Municipal",
                 tipo = TipoEvento.ACTIVIDAD_MUNICIPAL,
                 descripcion = "Presentar convenios a funcionarios municipales",
@@ -304,6 +306,7 @@ object SeedData {
         )
         val idOportunidadPlaza = baseDeDatos.oportunidadDao().insertar(
             Oportunidad(
+                id = 0L,
                 nombre = "Expo Familias Plaza Ficticia",
                 tipo = TipoEvento.ACTIVACION_COMERCIAL,
                 descripcion = "Activación comercial en centro comercial",
@@ -320,6 +323,7 @@ object SeedData {
         )
         val idOportunidadSalud = baseDeDatos.oportunidadDao().insertar(
             Oportunidad(
+                id = 0L,
                 nombre = "Feria de Salud Preventiva",
                 tipo = TipoEvento.FERIA_INSTITUCIONAL,
                 descripcion = "Stand de convenios de salud en feria interna",

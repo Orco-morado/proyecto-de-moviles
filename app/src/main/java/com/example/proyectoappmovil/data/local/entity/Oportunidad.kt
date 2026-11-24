@@ -27,7 +27,7 @@ import com.example.proyectoappmovil.data.model.TipoEvento
     indices = [Index("eventoId"), Index("responsableId"), Index("estado", "prioridad", "fechaActualizacion")]
 )
 data class Oportunidad(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long,
     val nombre: String,
     val tipo: TipoEvento,
     val descripcion: String,
