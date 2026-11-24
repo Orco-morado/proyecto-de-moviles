@@ -145,4 +145,11 @@ Cobertura reportada en la última ejecución:
 | Repositorio de oportunidades | 88.7% | 86.1% |
 | Validaciones de oportunidades | 100% | 100% |
 
----
+## APK firmado y llave
+
+APK release firmado: [`apk/proyecto-app-movil-release.apk`](apk/proyecto-app-movil-release.apk)
+Llave de firma: `app/practica-release.jks` · Detalle del proceso: [docs/APK_FIRMADO.md](docs/APK_FIRMADO.md)
+
+![APK firmado](docs/img/imagen%20apk.png)
+
+![Llave .jks](docs/img/imagen%20practica-release.jks%20y%20mas.png)
