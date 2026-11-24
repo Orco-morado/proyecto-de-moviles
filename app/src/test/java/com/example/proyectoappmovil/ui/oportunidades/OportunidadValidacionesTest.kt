@@ -62,4 +62,36 @@ class OportunidadValidacionesTest {
         val errores = validador.validar("Oportunidad de prueba", TipoEvento.FERIA_EMPRESARIAL, "Descripcion valida", "Web", "15/10/2026", Prioridad.MEDIA, "Medio")
         assertTrue(errores.isEmpty())
     }
+
+    @Test
+    fun camposEnBlancoGeneranErrores() {
+        val errores = validador.validar("   ", TipoEvento.EVENTO_CORPORATIVO, "   ", "   ", "01/01/2026", Prioridad.ALTA, "   ")
+        assertEquals(4, errores.size)
+        assertTrue(errores.containsKey("nombre"))
+        assertTrue(errores.containsKey("descripcion"))
+        assertTrue(errores.containsKey("fuenteInformacion"))
+        assertTrue(errores.containsKey("potencialComercial"))
+    }
+
+    @Test
+    fun fechaVaciaOFormatoBorde_generaError() {
+        val fechaVacia = validador.validar("Oportunidad", TipoEvento.EVENTO_CORPORATIVO, "Descripcion", "Web", "", Prioridad.ALTA, "Alto")
+        val fechaBorde = validador.validar("Oportunidad", TipoEvento.EVENTO_CORPORATIVO, "Descripcion", "Web", "31/02/2026", Prioridad.ALTA, "Alto")
+        val fechaCorta = validador.validar("Oportunidad", TipoEvento.EVENTO_CORPORATIVO, "Descripcion", "Web", "01-01-2026", Prioridad.ALTA, "Alto")
+
+        assertTrue(fechaVacia.containsKey("fechaDeteccion"))
+        assertTrue(fechaBorde.containsKey("fechaDeteccion"))
+        assertTrue(fechaCorta.containsKey("fechaDeteccion"))
+        assertFalse(fechaVacia.containsKey("nombre"))
+    }
+
+    @Test
+    fun multiplesCamposInvalidos_acumulaErrores() {
+        val errores = validador.validar("", null, "", "", "", null, "")
+
+        assertEquals(7, errores.size)
+        assertTrue(errores.keys.containsAll(
+            listOf("nombre", "tipo", "descripcion", "fuenteInformacion", "prioridad", "potencialComercial", "fechaDeteccion")
+        ))
+    }
 }
