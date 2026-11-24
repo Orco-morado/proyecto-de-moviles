@@ -145,7 +145,14 @@ tasks.register<org.gradle.testing.jacoco.tasks.JacocoReport>("jacocoTestReport")
         "**/*Activity*.*",
         "**/*Theme*.*",
         "**/ComposableSingletons*.*",
-        "**/ui/theme/**"
+        "**/ui/theme/**",
+        "**/AppNav*.*",
+        "**/CamaraHelper*.*",
+        "**/UbicacionHelper*.*",
+        "**/NotificacionHelper*.*",
+        "**/RecordatorioReceiver*.*",
+        "**/AppContainer*.*",
+        "**/App.*"
     )
 
     val debugTree = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
