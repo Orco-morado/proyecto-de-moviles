@@ -13,8 +13,10 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -152,5 +154,27 @@ class OportunidadesViewModelTest {
         assertTrue(viewModel.puedeEliminar(op, creador))
         assertFalse(viewModel.puedeEliminar(op, otroUsuario))
         assertFalse(viewModel.puedeEliminar(op, null))
+    }
+
+    @Test
+    fun observarFiltradas_delegaAlRepositorioConFiltros() = runTest {
+        val estado = EstadoOportunidad.entries.first()
+        val prioridad = Prioridad.entries.first()
+        val tipo = TipoEvento.entries.first()
+        val oportunidad = crearOportunidad(4L)
+        every { repositorio.observarFiltradas(estado, prioridad, tipo, "Mall") } returns flowOf(listOf(oportunidad))
+
+        val resultado = viewModel.observarFiltradas(estado, prioridad, tipo, "Mall").first()
+
+        assertEquals(listOf(oportunidad), resultado)
+        verify(exactly = 1) { repositorio.observarFiltradas(estado, prioridad, tipo, "Mall") }
+    }
+
+    @Test
+    fun puedeEliminar_permiteAdminPorUsername() {
+        val admin = crearUsuario(30L, PerfilUsuario.EJECUTIVO).copy(username = "admin")
+        val op = crearOportunidad(id = 1L, responsableId = 10L)
+
+        assertTrue(viewModel.puedeEliminar(op, admin))
     }
 }
