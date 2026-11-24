@@ -12,6 +12,27 @@ MySQL local (base `oportunidades_db`, usuario `root` por defecto):
 
 Variables opcionales: `DB_USERNAME` y `DB_PASSWORD`.
 
+### Perfil Neon (PostgreSQL)
+
+`application-neon.properties` lee estas variables de entorno sin valores por defecto:
+
+| Variable | Uso |
+|---|---|
+| `DB_URL` | URL JDBC de Neon, por ejemplo `jdbc:postgresql://HOST/DB?sslmode=require` |
+| `DB_USERNAME` | Usuario de la base de datos Neon |
+| `DB_PASSWORD` | Contraseña del usuario Neon |
+
+En PowerShell:
+
+```powershell
+$env:DB_URL="jdbc:postgresql://HOST/DB?sslmode=require"
+$env:DB_USERNAME="USUARIO"
+$env:DB_PASSWORD="CLAVE"
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=neon
+```
+
+No guardar los valores reales en el repositorio.
+
 Perfil H2 en memoria:
 
 ```bash
