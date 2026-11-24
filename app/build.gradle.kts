@@ -19,7 +19,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+        //cambio la url a localhost para conectar el celular fisico con adb reverse
+        buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8080/\"")
     }
 
     // Firma de aplicación (keystore de práctica)
@@ -35,7 +36,8 @@ android {
     buildTypes {
         debug {
             enableUnitTestCoverage = true
-            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            //cambio la url a localhost para conectar el celular fisico con adb reverse
+            buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8080/\"")
         }
         release {
             isMinifyEnabled = false
@@ -44,7 +46,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            //cambio la url a localhost para conectar el celular fisico con adb reverse
+            buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8080/\"")
         }
     }
     compileOptions {

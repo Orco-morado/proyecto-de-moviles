@@ -65,6 +65,12 @@ public class SeedData {
                 connection.getMetaData().getDatabaseProductName());
         if (producto != null && producto.toLowerCase().contains("h2")) {
             jdbcTemplate.execute("ALTER TABLE oportunidades ALTER COLUMN id RESTART WITH 5");
+            //agrego soporte para reiniciar la secuencia en postgresql (neon)
+        } else if (producto != null && producto.toLowerCase().contains("postgresql")) {
+            jdbcTemplate.queryForObject(
+                    "SELECT setval(pg_get_serial_sequence('oportunidades', 'id'), 4, true)",
+                    Long.class
+            );
         } else {
             jdbcTemplate.execute("ALTER TABLE oportunidades AUTO_INCREMENT = 5");
         }
