@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
@@ -118,6 +119,12 @@ fun OportunidadesScreen(
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Actualizar"
+                        )
+                    }
+                    IconButton(onClick = { navController.navigate("feriados") }) {
+                        Icon(
+                            imageVector = Icons.Filled.Event,
+                            contentDescription = "Feriados (planificación de activaciones)"
                         )
                     }
                     IconButton(onClick = { navController.navigate("organizaciones") }) {

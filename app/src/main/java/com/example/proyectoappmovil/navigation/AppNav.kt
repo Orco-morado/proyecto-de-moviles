@@ -10,6 +10,7 @@ import com.example.proyectoappmovil.ui.alertas.AlertasScreen
 import com.example.proyectoappmovil.ui.contactos.ContactoFormScreen
 import com.example.proyectoappmovil.ui.contactos.ContactosScreen
 import com.example.proyectoappmovil.ui.eventos.EventosScreen
+import com.example.proyectoappmovil.ui.feriados.FeriadosScreen
 import com.example.proyectoappmovil.ui.login.LoginScreen
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadesScreen
 import com.example.proyectoappmovil.ui.oportunidades.OportunidadFormScreen
@@ -52,6 +53,10 @@ fun AppNav() {
 
         composable("eventos") {
             EventosScreen(navController = navController)
+        }
+
+        composable("feriados") {
+            FeriadosScreen(navController = navController)
         }
 
         composable(
